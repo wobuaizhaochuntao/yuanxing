@@ -1,0 +1,1573 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>采集账号创意监控系统交互稿</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --surface: #ffffff;
+      --surface-2: #f9faf7;
+      --ink: #1e2420;
+      --muted: #667169;
+      --line: #dfe4dc;
+      --accent: #146c5f;
+      --accent-2: #b4472b;
+      --gold: #9b6b19;
+      --green-soft: #e7f4ef;
+      --red-soft: #f8e9e4;
+      --gold-soft: #f4eddd;
+      --shadow: 0 18px 40px rgba(23, 31, 27, .08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: .16s ease;
+      min-height: 34px;
+    }
+
+    button:hover { border-color: #aeb8af; background: #fbfcfa; }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.primary:hover { background: #10594f; }
+
+    button.danger {
+      color: var(--accent-2);
+      border-color: #e4b8aa;
+      background: #fff8f6;
+    }
+
+    input, select, textarea {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 8px 10px;
+      min-height: 34px;
+      outline: none;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(20, 108, 95, .12);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #1f2a25;
+      color: #e7eee9;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      padding: 8px 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .brand-subtitle {
+      color: #b8c7be;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      color: #dce7e0;
+      border-color: transparent;
+      text-align: left;
+      padding: 10px 10px;
+    }
+
+    .nav button:hover { background: rgba(255,255,255,.08); }
+    .nav button.active { background: #e7f4ef; color: #112d27; }
+
+    .nav small {
+      color: inherit;
+      opacity: .75;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      color: #c9d7cf;
+      line-height: 1.6;
+      font-size: 12px;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.88);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .content {
+      padding: 20px 24px 32px;
+      min-width: 0;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filters input { width: 220px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 72px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .stat strong {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .main-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .main-cell strong,
+    .main-cell span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      background: #fbfcfa;
+      font-size: 12px;
+    }
+
+    tr:hover td { background: #fcfdfb; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: #294039;
+      background: var(--green-soft);
+      border: 1px solid #cce4da;
+      white-space: nowrap;
+    }
+
+    .tag.red { color: #73301f; background: var(--red-soft); border-color: #edcbbf; }
+    .tag.gold { color: #64440f; background: var(--gold-soft); border-color: #e5d2a9; }
+    .tag.gray { color: #52605a; background: #eef1ed; border-color: #dce2dc; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      background: #edf3ef;
+      color: #2c5e51;
+    }
+
+    .status.off { background: #f1e9e5; color: #81402b; }
+    .status.wait { background: #f5efdf; color: #7b5616; }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .actions button {
+      padding: 6px 8px;
+      min-height: 30px;
+      font-size: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(280px, .92fr) minmax(360px, 1.38fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .item:hover, .item.active {
+      border-color: #87b8ad;
+      background: #f8fcfa;
+    }
+
+    .item-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .item-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .detail {
+      padding: 16px;
+    }
+
+    .detail h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .meta-box {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfa;
+      min-height: 64px;
+    }
+
+    .meta-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .script-block {
+      background: #fbfcfa;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .split-lines {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .product-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .product-card p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .drawer, .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 30;
+    }
+
+    .drawer.active, .modal-backdrop.active { display: block; }
+
+    .drawer::before, .modal-backdrop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 22, 18, .36);
+    }
+
+    .drawer-panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: min(560px, 100vw);
+      height: 100%;
+      background: #fff;
+      box-shadow: -20px 0 48px rgba(0,0,0,.18);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-head, .modal-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .drawer-head h2, .modal-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .drawer-body {
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .modal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(620px, calc(100vw - 32px));
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .modal-body { padding: 16px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .check-grid label {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      background: #fbfcfa;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #1f2a25;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .18s ease;
+      z-index: 50;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .daily-preview {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-2, .product-grid { grid-template-columns: 1fr; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .topbar { height: auto; padding: 14px 16px; align-items: flex-start; gap: 10px; flex-direction: column; }
+      table { min-width: 760px; }
+      .panel { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-title">创意监控中心</div>
+        <div class="brand-subtitle">采集账号监控、视频归因、商品改编与拍摄确认原型</div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="active" data-page="accounts">采集账号 <small>账号池</small></button>
+        <button data-page="raw">原始视频 <small>采集池</small></button>
+        <button data-page="candidates">视频归因 <small>拆解分析</small></button>
+        <button data-page="adaptation">选题改编 <small>落地脚本</small></button>
+        <button data-page="products">商品卡 <small>目标商品</small></button>
+      </nav>
+      <div class="sidebar-foot">
+        当前原型数据为演示样例。重点验证页面结构、状态流转和内容团队工作路径。
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">采集账号管理</h1>
+          <p id="pageDesc">维护需要定期采集的账号、分类、备注和操作记录。</p>
+        </div>
+        <div class="actions">
+          <button id="simulateRun">模拟今日采集</button>
+          <button class="primary" data-open-page="adaptation">查看选题改编</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <section class="page active" id="accounts">
+          <div class="toolbar">
+            <div class="filters">
+              <input id="accountSearch" placeholder="搜索账号名称/链接" />
+              <select><option>全部平台</option><option>抖音</option><option>小红书</option></select>
+              <select><option>全部类型</option><option>竞品账号</option><option>参考账号</option></select>
+            </div>
+            <div class="actions">
+              <button id="batchImport">批量导入</button>
+              <button class="primary" id="addAccount">新增账号</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>账号列表</h2>
+              <span class="tag gray">支持手动抓取与启停</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:72px;">平台</th>
+                  <th>账号名</th>
+                  <th style="width:110px;">账号类型</th>
+                  <th>标签</th>
+                  <th>备注</th>
+                  <th style="width:130px;">修改时间</th>
+                  <th style="width:96px;">操作人</th>
+                  <th style="width:90px;">状态</th>
+                  <th style="width:180px;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="accountRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="page" id="raw">
+          <div class="toolbar">
+            <div class="filters">
+              <select><option>最近一天</option><option>近 3 天</option><option>近 7 天</option></select>
+              <select><option>全部平台</option><option>抖音</option></select>
+              <select><option>全部状态</option><option>新采集</option><option>归因分析</option><option>脚本改编</option><option>确定拍摄</option></select>
+              <select><option>全部类型</option><option>自动采集</option><option>手动采集</option></select>
+              <select id="rawSort">
+                <option value="views">按播放量排序</option>
+                <option value="likes">按点赞排序</option>
+                <option value="comments">按评论排序</option>
+                <option value="favorites">按收藏排序</option>
+              </select>
+              <input placeholder="搜索标题/账号/链接" />
+            </div>
+            <div class="actions">
+              <button id="batchRawAttribution">批量归因</button>
+              <button id="manualCollect">手动采集</button>
+              <button>导出</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span>新增视频</span><strong>319</strong></div>
+            <div class="stat"><span>重复过滤</span><strong>76</strong></div>
+            <div class="stat"><span>采集失败</span><strong>8</strong><small>缺失部分信息</small></div>
+            <div class="stat"><span>重新采集任务</span><strong>24</strong><small>需要补采或重试</small></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>已采集 / 已过滤视频列表</h2>
+              <span class="tag gold">重点查看新增、重复过滤、采集失败和重新采集任务</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:52px;"><input type="checkbox" id="rawSelectAll" title="全选"></th>
+                  <th>标题</th>
+                  <th style="width:120px;">来源账号</th>
+                  <th style="width:120px;">发布时间</th>
+                  <th style="width:110px;">已发布时长</th>
+                  <th style="width:130px;">采集时间</th>
+                  <th style="width:90px;">类型</th>
+                  <th style="width:96px;">采集结果</th>
+                  <th style="width:96px;">播放量</th>
+                  <th style="width:86px;">点赞</th>
+                  <th style="width:86px;">评论</th>
+                  <th style="width:86px;">收藏</th>
+                  <th style="width:86px;">分享</th>
+                  <th style="width:100px;">状态</th>
+                  <th style="width:96px;">操作人</th>
+                  <th style="width:210px;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="rawRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="page" id="candidates">
+          <div class="toolbar">
+            <div class="filters">
+              <select><option>最近一天</option><option>近 3 天</option><option>近 7 天</option></select>
+              <select><option>全部商品</option><option>舟山带鱼</option><option>阳澄湖蟹卡</option></select>
+              <select><option>全部风险</option><option>低风险</option><option>中风险</option></select>
+              <select><option>全部操作人</option><option>系统</option><option>张三</option><option>李四</option></select>
+              <input placeholder="搜索结构/情绪/标题" />
+            </div>
+            <div class="actions">
+              <button id="batchAttribution">批量归因</button>
+              <button>导出</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span>已归因</span><strong>128</strong></div>
+            <div class="stat"><span>待归因</span><strong>42</strong></div>
+            <div class="stat"><span>建议改编</span><strong id="recommendCount">31</strong></div>
+            <div class="stat"><span>备选</span><strong>67</strong></div>
+            <div class="stat"><span>淘汰</span><strong>30</strong></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-head"><h2>归因视频</h2><span class="tag">点击查看拆解</span></div>
+              <div class="list" id="candidateList"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>视频拆解维度</h2><span class="tag gray" id="candidateScore">已归因</span></div>
+              <div class="detail" id="candidateDetail"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="adaptation">
+          <div class="toolbar">
+            <div class="filters">
+              <select><option>最近一天</option><option>近 3 天</option><option>近 7 天</option></select>
+              <select><option>全部商品</option><option>舟山带鱼</option><option>阳澄湖蟹卡</option></select>
+              <select><option>全部状态</option><option>推荐</option><option>待确认</option><option>已采纳</option></select>
+              <select><option>全部操作人</option><option>系统</option><option>张三</option><option>李四</option></select>
+              <input placeholder="搜索选题" />
+            </div>
+            <div class="actions">
+              <button id="newScript">手动新增选题</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span>推荐</span><strong id="todayCount">5</strong></div>
+            <div class="stat"><span>待确认</span><strong>12</strong></div>
+            <div class="stat"><span>已采纳</span><strong>4</strong></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-head"><h2>选题列表</h2><span class="tag gold">默认查看最近一天改编内容</span></div>
+              <div class="list" id="topicList"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>脚本编辑与落地信息</h2><span class="tag" id="topicStatus">待确认</span></div>
+              <div class="detail" id="topicDetail"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="products">
+          <div class="toolbar">
+            <div class="filters">
+              <select><option>全部商品类型</option><option>海鲜</option><option>礼品卡</option></select>
+              <select><option>全部状态</option><option>主推</option><option>常规</option></select>
+              <input placeholder="搜索商品/卖点/禁用词" />
+            </div>
+            <button class="primary" id="addProduct">新增商品卡</button>
+          </div>
+
+          <div class="product-grid" id="productGrid"></div>
+        </section>
+
+        <section class="page" id="daily">
+          <div class="toolbar">
+            <div class="filters">
+              <select><option>今天 09:00</option><option>昨天 09:00</option></select>
+              <select><option>企业微信</option><option>飞书</option><option>钉钉</option></select>
+            </div>
+            <div class="actions">
+              <button id="previewDaily">刷新预览</button>
+              <button class="primary" id="pushDaily">模拟推送</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>今日创意推送预览</h2>
+              <span class="tag">推送前可人工调整</span>
+            </div>
+            <div class="detail">
+              <div class="daily-preview" id="dailyPreview"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer" id="drawer">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2 id="drawerTitle">详情</h2>
+        <button id="closeDrawer">关闭</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">弹窗</h2>
+        <button id="closeModal">关闭</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const accounts = [
+      { platform: "抖音", name: "老周海鲜严选", type: "竞品账号", tags: ["避坑", "口播", "产地"], remark: "海鲜选购标准讲得比较细，适合看结构。", updatedAt: "2026-06-25 08:46", operator: "系统", status: "启用" },
+      { platform: "抖音", name: "礼品采购顾问", type: "参考账号", tags: ["送礼", "商务", "清单"], remark: "适合观察送礼焦虑和企业福利表达。", updatedAt: "2026-06-25 08:32", operator: "张三", status: "启用" },
+      { platform: "抖音", name: "家庭餐桌研究所", type: "参考账号", tags: ["家宴", "品质", "图文"], remark: "家庭餐桌场景强，适合作为带鱼内容参考。", updatedAt: "2026-06-25 07:58", operator: "系统", status: "启用" },
+      { platform: "小红书", name: "企业福利小王", type: "参考账号", tags: ["企业福利", "礼品卡"], remark: "暂时低频观察，后续看企业福利节点。", updatedAt: "2026-06-24 18:21", operator: "李四", status: "停用" }
+    ];
+
+    const rawVideos = [
+      { title: "买带鱼别只看大小，内行人先看这 3 点", account: "老周海鲜严选", publishTime: "2026-06-25 06:20", publishedDuration: "约 2 小时", collectTime: "2026-06-25 08:12", type: "自动采集", collectResult: "新增视频", views: "58.4w", likes: "1.2w", comments: "846", favorites: "2100", shares: "328", status: "新采集", operator: "系统", videoUrl: "https://www.douyin.com/video/example-001" },
+      { title: "今年中秋送礼，为什么很多老板不送月饼了", account: "礼品采购顾问", publishTime: "2026-06-24 22:10", publishedDuration: "约 10 小时", collectTime: "2026-06-25 07:55", type: "自动采集", collectResult: "新增视频", views: "42.7w", likes: "8600", comments: "356", favorites: "980", shares: "176", status: "归因分析", operator: "系统", videoUrl: "https://www.douyin.com/video/example-002" },
+      { title: "一顿像样的家宴，不是菜多，而是有一道硬菜", account: "家庭餐桌研究所", publishTime: "2026-06-25 01:30", publishedDuration: "约 5 小时", collectTime: "2026-06-25 06:40", type: "手动采集", collectResult: "新增视频", views: "19.8w", likes: "5400", comments: "219", favorites: "760", shares: "88", status: "脚本改编", operator: "张三", videoUrl: "https://www.douyin.com/video/example-003" },
+      { title: "企业福利最怕什么？员工收到后没感觉", account: "企业福利小王", publishTime: "2026-06-24 19:50", publishedDuration: "约 5 小时", collectTime: "2026-06-25 01:12", type: "自动采集", collectResult: "新增视频", views: "13.6w", likes: "3200", comments: "184", favorites: "410", shares: "69", status: "确定拍摄", operator: "李四", videoUrl: "https://www.douyin.com/video/example-004" },
+      { title: "买海鲜礼盒前，先看包装不如先看这件事", account: "老周海鲜严选", publishTime: "2026-06-24 21:35", publishedDuration: "约 3 小时", collectTime: "2026-06-25 00:42", type: "自动采集", collectResult: "重复过滤", views: "51.2w", likes: "1.1w", comments: "402", favorites: "900", shares: "122", status: "新采集", operator: "系统", videoUrl: "https://www.douyin.com/video/example-001" },
+      { title: "这条视频字幕缺失，等待重新采集", account: "未知账号", publishTime: "2026-06-24 23:48", publishedDuration: "约 30 分钟", collectTime: "2026-06-25 00:18", type: "自动采集", collectResult: "采集失败", views: "-", likes: "-", comments: "-", favorites: "-", shares: "-", status: "新采集", operator: "系统", videoUrl: "https://www.douyin.com/video/example-006" },
+      { title: "链接可访问但互动数据不完整，待重新采集", account: "礼品采购顾问", publishTime: "2026-06-24 23:30", publishedDuration: "约 36 分钟", collectTime: "2026-06-25 00:06", type: "自动采集", collectResult: "重新采集任务", views: "未知", likes: "未知", comments: "未知", favorites: "-", shares: "-", status: "新采集", operator: "系统", videoUrl: "https://www.douyin.com/video/example-007" }
+    ];
+
+    const candidates = [
+      {
+        title: "买带鱼别只看大小，内行人先看这 3 点",
+        account: "老周海鲜严选",
+        product: "舟山带鱼",
+        risk: "低",
+        riskSource: "产地和品质表达需要商品卡证据支撑。",
+        status: "已归因",
+        attributionTime: "2026-06-25 08:31",
+        operator: "系统",
+        videoUrl: "https://www.douyin.com/video/example-001",
+        hook: "很多人买带鱼第一眼只看宽不宽，其实这不是最关键的。",
+        conflict: "消费者以为大就好，但真正影响口感和送礼体验的是产地、鱼体状态和处理方式。",
+        emotion: "避坑焦虑 + 专业感",
+        structure: "三点避坑清单",
+        reusable: "保留“内行人看 3 点”的结构，替换成舟山带鱼的挑选标准。",
+        riskPart: "避免直接说“最好”“唯一正宗”，避免没有证明的低价对比。"
+      },
+      {
+        title: "今年中秋送礼，为什么很多老板不送月饼了",
+        account: "礼品采购顾问",
+        product: "阳澄湖蟹卡",
+        risk: "中",
+        riskSource: "趋势判断容易变成绝对化表达，需弱化为场景观察。",
+        status: "建议改编",
+        attributionTime: "2026-06-25 08:18",
+        operator: "张三",
+        videoUrl: "https://www.douyin.com/video/example-002",
+        hook: "今年中秋送客户，很多老板已经不只盯着月饼了。",
+        conflict: "传统礼品同质化，收礼人没感觉，送礼人又怕不体面。",
+        emotion: "送礼焦虑 + 体面感",
+        structure: "趋势判断 + 场景解释 + 替代方案",
+        reusable: "保留“为什么不送传统礼”的问题结构，落到蟹卡的便利和体面。",
+        riskPart: "不能夸大成所有老板都这么选，不能承诺客户一定喜欢。"
+      },
+      {
+        title: "一顿像样的家宴，不是菜多，而是有一道硬菜",
+        account: "家庭餐桌研究所",
+        product: "舟山带鱼",
+        risk: "低",
+        riskSource: "身份感表达需要克制，避免暗示消费鄙视链。",
+        status: "备选",
+        attributionTime: "2026-06-25 07:44",
+        operator: "系统",
+        videoUrl: "https://www.douyin.com/video/example-003",
+        hook: "家里来客人，菜多不一定显得会招待。",
+        conflict: "普通家宴缺少记忆点，需要一道品质稳定、上桌好看的硬菜。",
+        emotion: "家庭体面 + 安心",
+        structure: "场景痛点 + 解决方案 + 画面种草",
+        reusable: "保留“家宴硬菜”的场景，放大带鱼上桌价值。",
+        riskPart: "不能过度暗示吃某种食材就代表身份。"
+      }
+    ];
+
+    const topics = [
+      {
+        title: "买带鱼别只看大小，内行人看这 3 点",
+        product: "舟山带鱼",
+        scene: "家庭餐桌 / 品质自用",
+        priority: "S",
+        format: "口播 + 产品特写",
+        status: "待确认",
+        adaptedAt: "2026-06-25 08:43",
+        operator: "系统",
+        source: "老周海鲜严选",
+        logic: "保留原视频“三点避坑”结构，替换为舟山带鱼挑选标准。",
+        hook: "很多人买带鱼第一眼只看宽不宽，其实真正影响口感的是这 3 点。",
+        script: "第一，看产地和捕捞海域，舟山带鱼的风味基础在这里。\n第二，看鱼身状态，银脂、切段和完整度都会影响上桌效果。\n第三，看处理和冷链，家里吃要省心，送人更要稳定。\n如果你想买一份自己吃舒服、送人也体面的带鱼，可以先按这三个标准看。",
+        materials: "带鱼切段特写、包装画面、冷链发货画面、餐桌成品画面",
+        risk: "避免说“最好”“唯一正宗”，产地和品质表达需要有证据。"
+      },
+      {
+        title: "为什么现在很多老板中秋不只送月饼",
+        product: "阳澄湖蟹卡",
+        scene: "客户送礼 / 企业福利",
+        priority: "S",
+        format: "商务剧情 + AIGC 场景",
+        status: "推荐",
+        adaptedAt: "2026-06-25 08:29",
+        operator: "张三",
+        source: "礼品采购顾问",
+        logic: "保留“传统礼品不够出彩”的冲突，改成蟹卡的体面和便利。",
+        hook: "今年中秋送客户，如果还只准备月饼，可能很难让人记住。",
+        script: "送礼最怕两件事：一是看起来普通，二是收的人用不上。\n蟹卡的好处是，不用当场处理，收礼人可以按自己的时间兑换。\n对企业福利和客户关系来说，它既有节日感，也比普通礼盒更灵活。\n如果你今年想准备一份体面、省心、不容易出错的中秋礼，可以提前看看蟹卡方案。",
+        materials: "蟹卡包装、商务递送场景、兑换流程截图、节日氛围图",
+        risk: "不要说“所有老板都改送蟹卡”，避免绝对化趋势表述。"
+      }
+    ];
+
+    const products = [
+      {
+        name: "舟山带鱼",
+        type: "海鲜食材",
+        status: "主推",
+        scenes: ["家庭餐桌", "品质自用", "年货", "送长辈"],
+        buyers: ["中高端家庭", "品质消费者", "送礼人群"],
+        selling: ["舟山产地", "鱼体品质", "冷链配送", "口感稳定", "分量便利"],
+        avoid: ["全网第一", "绝对新鲜", "治疗功效", "唯一正宗"],
+        formats: ["避坑口播", "产品特写", "家宴场景", "AIGC 知识图解"]
+      },
+      {
+        name: "阳澄湖蟹卡",
+        type: "礼品卡",
+        status: "主推",
+        scenes: ["中秋送礼", "客户关系", "企业福利", "送长辈"],
+        buyers: ["商务采购", "企业行政", "送礼人群"],
+        selling: ["体面省心", "兑换便利", "发货可靠", "礼品呈现", "服务保障"],
+        avoid: ["保证最大", "绝不踩坑", "唯一正宗", "所有客户都喜欢"],
+        formats: ["商务剧情", "送礼清单", "图文混剪", "兑换流程讲解"]
+      }
+    ];
+
+    let selectedCandidate = 0;
+    let selectedTopic = 0;
+
+    const pageMeta = {
+      accounts: ["采集账号管理", "维护需要定期采集的账号、分类、备注和操作记录。"],
+      raw: ["原始视频采集", "默认查看最近一天采集视频，支持手动录入抖音链接。"],
+      candidates: ["视频归因", "默认查看最近一天归因视频，完成拆解、风险标记和进入改编。"],
+      adaptation: ["选题改编工作台", "默认查看最近一天改编视频，管理推荐、待确认和已采纳内容。"],
+      products: ["商品卡管理", "维护改编目标商品的卖点、场景、素材和禁用表达。"],
+      daily: ["每日推送预览", "预览今日创意日报并模拟推送到工作群。"]
+    };
+
+    function tagHtml(tags, extra = "") {
+      return tags.map(t => `<span class="tag ${extra}">${t}</span>`).join("");
+    }
+
+    function metricValue(value) {
+      if (value === null || value === undefined) return -1;
+      const text = String(value).trim().toLowerCase();
+      if (!text || text === "-" || text === "未知") return -1;
+      const number = parseFloat(text.replace(/,/g, ""));
+      if (Number.isNaN(number)) return -1;
+      if (text.includes("w")) return number * 10000;
+      if (text.includes("万")) return number * 10000;
+      return number;
+    }
+
+    function toast(text) {
+      const el = document.getElementById("toast");
+      el.textContent = text;
+      el.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => el.classList.remove("active"), 2200);
+    }
+
+    function switchPage(id) {
+      document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === id));
+      document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+      document.getElementById("pageTitle").textContent = pageMeta[id][0];
+      document.getElementById("pageDesc").textContent = pageMeta[id][1];
+      if (id === "daily") renderDaily();
+    }
+
+    function renderAccounts() {
+      document.getElementById("accountRows").innerHTML = accounts.map((a, idx) => `
+        <tr>
+          <td>${a.platform}</td>
+          <td>${a.name}</td>
+          <td>${a.type}</td>
+          <td><div class="tag-row">${tagHtml(a.tags)}</div></td>
+          <td>${a.remark}</td>
+          <td>${a.updatedAt}</td>
+          <td>${a.operator}</td>
+          <td><span class="status ${a.status === "停用" ? "off" : ""}">${a.status}</span></td>
+          <td>
+            <div class="actions">
+              <button onclick="openAccount(${idx})">查看</button>
+              <button onclick="toggleAccount(${idx})">${a.status === "启用" ? "停用" : "启用"}</button>
+              <button onclick="toast('已触发该账号手动抓取')">抓取</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+      const accountTotal = document.getElementById("accountTotal");
+      if (accountTotal) accountTotal.textContent = accounts.length;
+    }
+
+    function renderRaw() {
+      const sortKey = document.getElementById("rawSort")?.value || "views";
+      const rows = rawVideos
+        .map((video, idx) => ({ video, idx }))
+        .sort((a, b) => metricValue(b.video[sortKey]) - metricValue(a.video[sortKey]));
+      document.getElementById("rawRows").innerHTML = rows.map(({ video: v, idx }) => `
+        <tr>
+          <td><input type="checkbox" class="raw-select" data-idx="${idx}" ${["新增视频", "重新采集任务"].includes(v.collectResult) ? "" : "disabled"}></td>
+          <td><div class="main-cell"><strong>${v.title}</strong><span class="subtle">${v.videoUrl}</span></div></td>
+          <td><strong>${v.account}</strong></td>
+          <td>${v.publishTime}</td>
+          <td>${v.publishedDuration}</td>
+          <td>${v.collectTime}</td>
+          <td>${v.type}</td>
+          <td><span class="status ${v.collectResult === "采集失败" ? "off" : v.collectResult === "重新采集任务" ? "wait" : ""}">${v.collectResult}</span></td>
+          <td>${v.views}</td>
+          <td>${v.likes}</td>
+          <td>${v.comments}</td>
+          <td>${v.favorites}</td>
+          <td>${v.shares}</td>
+          <td><span class="status ${v.status === "新采集" ? "wait" : ""}">${v.status}</span></td>
+          <td>${v.operator}</td>
+          <td>
+            <div class="actions">
+              <button onclick="openVideo(${idx})">详情</button>
+              <button onclick="moveToCandidate(${idx})">归因分析</button>
+              <button onclick="toast('已打开原视频链接示意')">原视频</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderCandidates() {
+      document.getElementById("candidateList").innerHTML = candidates.map((c, idx) => `
+        <div class="item ${idx === selectedCandidate ? "active" : ""}" onclick="selectCandidate(${idx})">
+          <div class="item-title">
+            <span>${c.title}</span>
+            <span class="tag">${c.status}</span>
+          </div>
+          <div class="item-meta">${c.account}｜目标商品：${c.product}｜风险：${c.risk}｜归因时间：${c.attributionTime}｜操作人：${c.operator}</div>
+          <div class="tag-row" style="margin-top:8px;">${tagHtml([c.structure, c.emotion])}</div>
+        </div>
+      `).join("");
+      renderCandidateDetail();
+    }
+
+    function renderCandidateDetail() {
+      const c = candidates[selectedCandidate];
+      document.getElementById("candidateScore").textContent = c.status;
+      document.getElementById("candidateDetail").innerHTML = `
+        <h3>${c.title}</h3>
+        <div class="actions" style="margin-bottom:12px;">
+          <button onclick="toast('已打开原视频链接示意：${c.videoUrl}')">查看原视频</button>
+        </div>
+        <div class="tag-row">${tagHtml([c.product, `${c.risk}风险`, c.status], c.risk === "中" ? "gold" : "")}</div>
+        <div class="meta-grid">
+          <div class="meta-box"><span>来源账号</span><strong>${c.account}</strong></div>
+          <div class="meta-box"><span>归因时间</span><strong>${c.attributionTime}</strong></div>
+          <div class="meta-box"><span>操作人</span><strong>${c.operator}</strong></div>
+          <div class="meta-box"><span>风险来源</span><strong>${c.riskSource}</strong></div>
+        </div>
+        <div class="split-lines">
+          <div><strong>内容结构</strong><div class="script-block">${c.structure}</div></div>
+          <div><strong>开头钩子</strong><div class="script-block">${c.hook}</div></div>
+          <div><strong>情绪驱动</strong><div class="script-block">${c.emotion}</div></div>
+          <div><strong>核心冲突</strong><div class="script-block">${c.conflict}</div></div>
+          <div><strong>可复用的部分</strong><div class="script-block">${c.reusable}</div></div>
+          <div><strong>风险部分</strong><div class="script-block">${c.riskPart}</div></div>
+        </div>
+        <div class="actions" style="margin-top:14px;">
+          <button class="primary" onclick="openAdaptModal()">进入改编</button>
+          <button onclick="toast('已放入备选池')">备选</button>
+          <button class="danger" onclick="toast('已标记为淘汰')">淘汰</button>
+        </div>
+      `;
+    }
+
+    function renderTopics() {
+      document.getElementById("topicList").innerHTML = topics.map((t, idx) => `
+        <div class="item ${idx === selectedTopic ? "active" : ""}" onclick="selectTopic(${idx})">
+          <div class="item-title">
+            <span>${t.priority}｜${t.title}</span>
+            <span class="tag ${t.priority === "S" ? "red" : "gold"}">${t.priority}</span>
+          </div>
+          <div class="item-meta">商品：${t.product}｜形式：${t.format}｜状态：${t.status}｜改编时间：${t.adaptedAt}｜操作人：${t.operator}</div>
+        </div>
+      `).join("");
+      document.getElementById("todayCount").textContent = topics.filter(t => t.status === "推荐").length;
+      renderTopicDetail();
+    }
+
+    function renderTopicDetail() {
+      const t = topics[selectedTopic] || topics[0];
+      if (!t) return;
+      document.getElementById("topicStatus").textContent = t.status;
+      document.getElementById("topicDetail").innerHTML = `
+        <h3>${t.title}</h3>
+        <div class="tag-row">${tagHtml([t.product, t.scene, t.format])}</div>
+        <div class="meta-grid">
+          <div class="meta-box"><span>来源</span><strong>${t.source}</strong></div>
+          <div class="meta-box"><span>优先级</span><strong>${t.priority}</strong></div>
+          <div class="meta-box"><span>改编时间</span><strong>${t.adaptedAt}</strong></div>
+          <div class="meta-box"><span>操作人</span><strong>${t.operator}</strong></div>
+        </div>
+        <div class="split-lines">
+          <div><strong>改编逻辑</strong><div class="script-block">${t.logic}</div></div>
+          <div><strong>3 秒钩子</strong><textarea id="hookEdit">${t.hook}</textarea></div>
+          <div><strong>正文脚本</strong><textarea id="scriptEdit">${t.script}</textarea></div>
+          <div><strong>素材需求</strong><div class="script-block">${t.materials}</div></div>
+          <div><strong>风险提示</strong><div class="script-block">${t.risk}</div></div>
+        </div>
+        <div class="actions" style="margin-top:14px;">
+          <button onclick="regenerateScript()">重新生成</button>
+          <button onclick="saveTopic()">保存</button>
+          <button class="primary" onclick="markRecommended()">设为推荐</button>
+          <button onclick="markAccepted()">标记已采纳</button>
+        </div>
+      `;
+    }
+
+    function renderProducts() {
+      document.getElementById("productGrid").innerHTML = products.map((p, idx) => `
+        <article class="product-card">
+          <div class="item-title">
+            <h3>${p.name}</h3>
+            <span class="tag red">${p.status}</span>
+          </div>
+          <p>${p.type}｜适合：${p.scenes.join(" / ")}</p>
+          <strong>核心卖点</strong>
+          <div class="tag-row" style="margin:8px 0 12px;">${tagHtml(p.selling)}</div>
+          <strong>禁用表达</strong>
+          <div class="tag-row" style="margin:8px 0 14px;">${tagHtml(p.avoid, "red")}</div>
+          <strong>适合形式</strong>
+          <div class="tag-row" style="margin:8px 0 14px;">${tagHtml(p.formats, "gold")}</div>
+          <div class="actions">
+            <button onclick="editProduct(${idx})">编辑</button>
+            <button onclick="toast('已设为主推商品')">设为主推</button>
+            <button onclick="toast('商品卡已停用')">停用</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderDaily() {
+      const selected = topics.slice(0, 5);
+      const body = `今日创意推送预览｜2026-06-25
+
+一、今日建议生产 ${selected.length} 条
+
+${selected.map((t, i) => `${i + 1}. ${t.title}
+产品：${t.product}
+来源：${t.source}
+原视频爆点：${t.logic}
+建议形式：${t.format}
+脚本：
+${t.hook}
+${t.script}
+素材需求：${t.materials}
+风险提示：${t.risk}
+优先级：${t.priority}`).join("\n\n")}
+
+二、备选选题池
+- 一顿像样家宴，需要一道稳定的硬菜｜舟山带鱼｜家庭餐桌场景强
+- 企业福利不要只看单价，要看员工有没有感知｜阳澄湖蟹卡｜适合行政采购
+
+三、新增值得关注账号
+- 企业福利小王｜企业福利选品结构稳定
+- 家庭餐桌研究所｜家宴场景表达可复用`;
+      document.getElementById("dailyPreview").textContent = body;
+    }
+
+    function openDrawer(title, html) {
+      document.getElementById("drawerTitle").textContent = title;
+      document.getElementById("drawerBody").innerHTML = html;
+      document.getElementById("drawer").classList.add("active");
+    }
+
+    function openModal(title, html) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML = html;
+      document.getElementById("modal").classList.add("active");
+    }
+
+    function closeModal() { document.getElementById("modal").classList.remove("active"); }
+
+    window.openAccount = function(idx) {
+      const a = accounts[idx];
+      openDrawer("账号详情", `
+        <h3>${a.name}</h3>
+        <div class="meta-grid">
+          <div class="meta-box"><span>平台</span><strong>${a.platform}</strong></div>
+          <div class="meta-box"><span>账号类型</span><strong>${a.type}</strong></div>
+          <div class="meta-box"><span>修改时间</span><strong>${a.updatedAt}</strong></div>
+          <div class="meta-box"><span>操作人</span><strong>${a.operator}</strong></div>
+        </div>
+        <div class="tag-row">${tagHtml(a.tags)}</div>
+        <div class="script-block" style="margin-top:12px;">备注：${a.remark}
+最近抓取：今天 07:30
+推荐动作：继续监控，优先关注可复用的视频结构。</div>
+      `);
+    };
+
+    window.toggleAccount = function(idx) {
+      accounts[idx].status = accounts[idx].status === "启用" ? "停用" : "启用";
+      renderAccounts();
+      toast(`账号已${accounts[idx].status}`);
+    };
+
+    window.openVideo = function(idx) {
+      const v = rawVideos[idx];
+      openDrawer("原始视频详情", `
+        <h3>${v.title}</h3>
+        <div class="meta-grid">
+          <div class="meta-box"><span>来源账号</span><strong>${v.account}</strong></div>
+          <div class="meta-box"><span>发布时间</span><strong>${v.publishTime}</strong></div>
+          <div class="meta-box"><span>已发布时长</span><strong>${v.publishedDuration}</strong></div>
+          <div class="meta-box"><span>采集时间</span><strong>${v.collectTime}</strong></div>
+          <div class="meta-box"><span>采集类型</span><strong>${v.type}</strong></div>
+          <div class="meta-box"><span>采集结果</span><strong>${v.collectResult}</strong></div>
+          <div class="meta-box"><span>操作人</span><strong>${v.operator}</strong></div>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-box"><span>播放量</span><strong>${v.views}</strong></div>
+          <div class="meta-box"><span>点赞</span><strong>${v.likes}</strong></div>
+          <div class="meta-box"><span>评论</span><strong>${v.comments}</strong></div>
+          <div class="meta-box"><span>收藏</span><strong>${v.favorites}</strong></div>
+          <div class="meta-box"><span>分享</span><strong>${v.shares}</strong></div>
+        </div>
+        <strong>视频文案</strong>
+        <div class="script-block">很多人买之前只看表面，但真正影响体验的是背后的标准。这个视频用于演示原始采集文本、字幕和评论高频词区域。</div>
+        <strong>评论高频词</strong>
+        <div class="tag-row" style="margin-top:8px;">${tagHtml(["怎么买", "送礼合适吗", "怎么分辨", "价格多少"], "gold")}</div>
+      `);
+    };
+
+    window.moveToCandidate = function(idx) {
+      rawVideos[idx].status = "归因分析";
+      renderRaw();
+      toast("已进入归因分析状态");
+    };
+
+    window.selectCandidate = function(idx) {
+      selectedCandidate = idx;
+      renderCandidates();
+    };
+
+    window.openAdaptModal = function() {
+      const c = candidates[selectedCandidate];
+      openModal("进入改编", `
+        <div class="field full">
+          <label>原视频</label>
+          <div class="script-block">${c.title}</div>
+        </div>
+        <div class="form-grid" style="margin-top:12px;">
+          <div class="field">
+            <label>目标商品</label>
+            <select id="adaptProduct">
+              <option>${c.product}</option>
+              <option>舟山带鱼</option>
+              <option>阳澄湖蟹卡</option>
+              <option>两者都生成</option>
+            </select>
+          </div>
+          <div class="field"><label>操作人</label><input id="adaptOperator" value="张三"></div>
+          <div class="field full">
+            <label>改编方向</label>
+            <textarea id="adaptDirection" placeholder="例如：保留三点避坑结构，改成舟山带鱼挑选标准，语气更克制。">${c.reusable}</textarea>
+          </div>
+          <div class="field full">
+            <label>操作时间</label>
+            <input id="adaptTime" value="2026-06-25 09:12">
+          </div>
+        </div>
+        <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+          <button onclick="closeModal()">取消</button>
+          <button class="primary" onclick="createTopicFromCandidate()">生成改编选题</button>
+        </div>
+      `);
+    };
+
+    window.createTopicFromCandidate = function() {
+      const c = candidates[selectedCandidate];
+      const product = document.getElementById("adaptProduct").value;
+      const direction = document.getElementById("adaptDirection").value;
+      const operator = document.getElementById("adaptOperator").value || "系统";
+      const adaptedAt = document.getElementById("adaptTime").value || "2026-06-25 09:12";
+      topics.unshift({
+        title: product.includes("蟹") ? "送客户的礼，不一定要贵，但一定要省心体面" : "懂行的人买带鱼，不会只看大小",
+        product: product === "两者都生成" ? c.product : product,
+        scene: product.includes("蟹") ? "商务送礼 / 企业福利" : "家庭餐桌 / 品质自用",
+        priority: "S",
+        format: product.includes("蟹") ? "商务剧情 + AIGC 场景" : "口播 + 产品特写",
+        status: "待确认",
+        adaptedAt,
+        operator,
+        source: c.account,
+        logic: direction,
+        hook: product.includes("蟹") ? "送客户最怕礼到了，但人情没送到。" : "买带鱼如果只看大小，很容易忽略真正影响口感的细节。",
+        script: product.includes("蟹") ? "商务送礼要解决三个问题：体面、方便、少出错。\n蟹卡的优势是收礼人可以按自己的时间兑换，不用当场处理。\n对企业福利和客户关系来说，省心本身就是一种价值。" : "第一看产地，第二看鱼体状态，第三看处理和冷链。\n这三个标准决定了它是普通家常菜，还是能上桌的硬菜。\n自己吃要稳定，送人更要稳。",
+        materials: product.includes("蟹") ? "蟹卡包装、兑换流程、商务递送场景" : "带鱼实拍、切段特写、冷链包装、餐桌成品",
+        risk: "避免绝对化承诺，所有产地和服务表达需要可证明。"
+      });
+      selectedTopic = 0;
+      closeModal();
+      renderTopics();
+      switchPage("adaptation");
+      toast("已生成改编选题并进入工作台");
+    };
+
+    window.selectTopic = function(idx) {
+      selectedTopic = idx;
+      renderTopics();
+    };
+
+    window.regenerateScript = function() {
+      const t = topics[selectedTopic];
+      t.hook = t.product.includes("蟹") ? "一份好礼，不是包装越大越好，而是收的人真的方便。" : "真正懂带鱼的人，不会只问宽不宽。";
+      t.script = t.product.includes("蟹") ? "送礼最怕看起来热闹，实际给对方添麻烦。\n蟹卡的价值是把选择权交给收礼人，时间合适再兑换。\n对于客户和员工福利，体面和省心一样重要。" : "看产地，是看风味基础。\n看鱼身状态，是看上桌效果。\n看处理和冷链，是看体验稳不稳。\n这三点比单纯看大小更重要。";
+      renderTopicDetail();
+      toast("已生成一个新版本");
+    };
+
+    window.saveTopic = function() {
+      topics[selectedTopic].hook = document.getElementById("hookEdit").value;
+      topics[selectedTopic].script = document.getElementById("scriptEdit").value;
+      toast("脚本已保存");
+    };
+
+    window.markRecommended = function() {
+      topics[selectedTopic].status = "推荐";
+      renderTopics();
+      toast("已设为推荐");
+    };
+
+    window.markAccepted = function() {
+      topics[selectedTopic].status = "已采纳";
+      renderTopics();
+      toast("已标记为已采纳");
+    };
+
+    window.editProduct = function(idx) {
+      const p = products[idx];
+      openModal(`编辑商品卡：${p.name}`, `
+        <div class="form-grid">
+          <div class="field"><label>商品名称</label><input id="productName" value="${p.name}"></div>
+          <div class="field"><label>状态</label><select><option>${p.status}</option><option>常规</option><option>暂停</option></select></div>
+          <div class="field full"><label>核心卖点</label><textarea id="productSelling">${p.selling.join("、")}</textarea></div>
+          <div class="field full"><label>禁用表达</label><textarea id="productAvoid">${p.avoid.join("、")}</textarea></div>
+          <div class="field full"><label>适合场景</label><textarea>${p.scenes.join("、")}</textarea></div>
+        </div>
+        <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+          <button onclick="closeModal()">取消</button>
+          <button class="primary" onclick="saveProduct(${idx})">保存商品卡</button>
+        </div>
+      `);
+    };
+
+    window.saveProduct = function(idx) {
+      products[idx].name = document.getElementById("productName").value;
+      products[idx].selling = document.getElementById("productSelling").value.split(/[、,，]/).filter(Boolean);
+      products[idx].avoid = document.getElementById("productAvoid").value.split(/[、,，]/).filter(Boolean);
+      closeModal();
+      renderProducts();
+      toast("商品卡已保存");
+    };
+
+    document.getElementById("nav").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-page]");
+      if (btn) switchPage(btn.dataset.page);
+    });
+
+    document.querySelectorAll("[data-open-page]").forEach(btn => {
+      btn.addEventListener("click", () => switchPage(btn.dataset.openPage));
+    });
+
+    document.getElementById("closeDrawer").addEventListener("click", () => document.getElementById("drawer").classList.remove("active"));
+    document.getElementById("drawer").addEventListener("click", e => { if (e.target.id === "drawer") document.getElementById("drawer").classList.remove("active"); });
+    document.getElementById("closeModal").addEventListener("click", closeModal);
+    document.getElementById("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+
+    document.getElementById("addAccount").addEventListener("click", () => {
+      openModal("新增采集账号", `
+        <div class="form-grid">
+          <div class="field"><label>平台</label><select><option>抖音</option><option>小红书</option><option>视频号</option></select></div>
+          <div class="field"><label>账号名称</label><input id="newAccountName" placeholder="例如：海鲜选品观察"></div>
+          <div class="field full"><label>主页链接</label><input placeholder="粘贴账号主页链接"></div>
+          <div class="field"><label>账号类型</label><select id="newAccountType"><option>竞品账号</option><option>参考账号</option></select></div>
+          <div class="field"><label>操作人</label><input id="newAccountOperator" value="张三"></div>
+          <div class="field full"><label>标签</label><input id="newAccountTags" placeholder="避坑、送礼、口播"></div>
+          <div class="field full"><label>备注</label><textarea id="newAccountRemark" placeholder="说明这个账号为什么值得采集，或当前观察重点。"></textarea></div>
+        </div>
+        <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+          <button onclick="closeModal()">取消</button>
+          <button class="primary" onclick="saveNewAccount()">保存账号</button>
+        </div>
+      `);
+    });
+
+    window.saveNewAccount = function() {
+      accounts.unshift({
+        platform: "抖音",
+        name: document.getElementById("newAccountName").value || "新采集账号",
+        type: document.getElementById("newAccountType").value,
+        tags: (document.getElementById("newAccountTags").value || "待观察").split(/[、,，]/),
+        remark: document.getElementById("newAccountRemark").value || "新账号，待观察内容结构。",
+        updatedAt: "2026-06-25 09:18",
+        operator: document.getElementById("newAccountOperator").value || "系统",
+        status: "启用"
+      });
+      closeModal();
+      renderAccounts();
+      toast("账号已新增");
+    };
+
+    window.saveManualVideo = function() {
+      const url = document.getElementById("manualVideoUrl").value || "https://www.douyin.com/video/manual-demo";
+      const account = document.getElementById("manualVideoAccount").value || "手动录入账号";
+      const operator = document.getElementById("manualVideoOperator").value || "系统";
+      rawVideos.unshift({
+        title: "手动录入视频，等待补充标题",
+        account,
+        publishTime: "待补充",
+        publishedDuration: "待补充",
+        collectTime: "2026-06-25 09:20",
+        type: "手动采集",
+        collectResult: "新增视频",
+        views: "-",
+        likes: "-",
+        comments: "-",
+        favorites: "-",
+        shares: "-",
+        status: "新采集",
+        operator,
+        videoUrl: url
+      });
+      closeModal();
+      renderRaw();
+      switchPage("raw");
+      toast("手动视频已录入原始视频池");
+    };
+
+    function getSelectedRawIndexes() {
+      return Array.from(document.querySelectorAll(".raw-select:checked")).map(input => Number(input.dataset.idx));
+    }
+
+    document.getElementById("batchImport").addEventListener("click", () => toast("批量导入入口示意：可粘贴账号链接或上传表格"));
+    document.getElementById("rawSort").addEventListener("change", () => {
+      renderRaw();
+      const label = document.getElementById("rawSort").selectedOptions[0].textContent;
+      toast(`已切换为${label}`);
+    });
+    document.getElementById("batchRawAttribution").addEventListener("click", () => {
+      const indexes = getSelectedRawIndexes();
+      if (!indexes.length) {
+        toast("请先勾选需要归因的视频");
+        return;
+      }
+      indexes.forEach(idx => {
+        if (rawVideos[idx]) rawVideos[idx].status = "归因分析";
+      });
+      renderRaw();
+      toast(`已将 ${indexes.length} 条视频加入归因分析`);
+    });
+    document.addEventListener("change", e => {
+      if (e.target && e.target.id === "rawSelectAll") {
+        document.querySelectorAll(".raw-select:not(:disabled)").forEach(input => {
+          input.checked = e.target.checked;
+        });
+      }
+    });
+    document.getElementById("manualCollect").addEventListener("click", () => {
+      openModal("手动采集抖音视频", `
+        <div class="form-grid">
+          <div class="field full"><label>抖音视频链接</label><input id="manualVideoUrl" placeholder="粘贴一个抖音视频链接"></div>
+          <div class="field"><label>来源账号，选填</label><input id="manualVideoAccount" placeholder="未知账号"></div>
+          <div class="field"><label>操作人</label><input id="manualVideoOperator" value="张三"></div>
+        </div>
+        <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+          <button onclick="closeModal()">取消</button>
+          <button class="primary" onclick="saveManualVideo()">录入视频</button>
+        </div>
+      `);
+    });
+    document.getElementById("batchAttribution").addEventListener("click", () => toast("已对待归因视频发起批量分析"));
+    document.getElementById("newScript").addEventListener("click", () => toast("手动新增选题入口示意"));
+    document.getElementById("previewDaily").addEventListener("click", () => { renderDaily(); toast("日报预览已刷新"); });
+    document.getElementById("pushDaily").addEventListener("click", () => toast("已模拟推送到工作群"));
+    document.getElementById("simulateRun").addEventListener("click", () => toast("今日采集、筛选、归因、改编流程已模拟完成"));
+    document.getElementById("addProduct").addEventListener("click", () => toast("新增商品卡入口示意"));
+
+    renderAccounts();
+    renderRaw();
+    renderCandidates();
+    renderTopics();
+    renderProducts();
+    renderDaily();
+  </script>
+</body>
+</html>
