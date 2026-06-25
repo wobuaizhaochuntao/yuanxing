@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>架构图</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Segoe UI', 'PingFang SC', sans-serif; background: #f0f2f5; padding: 40px; }
+.container { width: 1200px; margin: 0 auto; }
+.layer { border-radius: 16px; padding: 32px; margin-bottom: 24px; position: relative; }
+.layer1 { background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%); border: 2px solid #FF6B6B; }
+.layer2 { background: linear-gradient(135deg, #f0fffc 0%, #e5f5f5 100%); border: 2px solid #4ECDC4; }
+.layer3 { background: linear-gradient(135deg, #f0f8ff 0%, #e5f0f5 100%); border: 2px solid #45B7D1; }
+.badge { position: absolute; top: -14px; left: 24px; padding: 8px 20px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 15px; }
+.b1 { background: #FF6B6B; }
+.b2 { background: #4ECDC4; }
+.b3 { background: #45B7D1; }
+.content { display: flex; justify-content: space-between; }
+.left h2 { font-size: 24px; color: #222; margin-bottom: 12px; }
+.left p { font-size: 15px; color: #555; line-height: 2; }
+.tag { display: inline-block; padding: 6px 16px; border-radius: 12px; font-size: 13px; margin-top: 12px; color: #fff; font-weight: bold; }
+.right { width: 300px; background: rgba(255,255,255,0.7); border-radius: 12px; padding: 20px; }
+.right h4 { font-size: 13px; color: #888; margin-bottom: 16px; }
+.item { padding: 10px 0; font-size: 14px; color: #444; border-bottom: 1px dashed #ddd; }
+.item:last-child { border: none; }
+.arrow { text-align: center; font-size: 32px; color: #bbb; margin: -8px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 style="text-align:center; margin-bottom: 40px; color: #1a1a2e;">抖音直播数据分析平台 — 整体架构</h1>
+  
+  <div class="layer layer1">
+    <div class="badge b1">L1 概览层</div>
+    <div class="content">
+      <div class="left">
+        <h2>达人看板</h2>
+        <p>• 今天谁播得好？谁出了问题？</p>
+        <p>• 状态标签：🔥优秀 / ⚠️异常 / 🚨严重</p>
+        <span class="tag" style="background:#FF6B6B;">页面：达人列表</span>
+      </div>
+      <div class="right">
+        <h4>核心数据</h4>
+        <div class="item">📊 总GMV / 总场观 / 总订单</div>
+        <div class="item">👤 达人列表（排序+筛选）</div>
+        <div class="item">🏷️ 异常状态自动标记</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="arrow">⬇</div>
+  
+  <div class="layer layer2">
+    <div class="badge b2">L2 场次层</div>
+    <div class="content">
+      <div class="left">
+        <h2>直播列表 + 单场卡片</h2>
+        <p>• 这场直播打几分？哪里及格哪里不及格？</p>
+        <p>• 综合评分：流量/转化/商品/留存 四维</p>
+        <span class="tag" style="background:#4ECDC4;">页面：直播卡片</span>
+      </div>
+      <div class="right">
+        <h4>核心数据</h4>
+        <div class="item">⭐ 综合评分（0-100）</div>
+        <div class="item">📈 GMV / 场观 / ROI 趋势</div>
+        <div class="item">⚠️ 异常项自动摘要</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="arrow">⬇</div>
+  
+  <div class="layer layer3">
+    <div class="badge b3">L3 细节层</div>
+    <div class="content">
+      <div class="left">
+        <h2>单场深度复盘</h2>
+        <p>• 什么时间点出了什么问题？怎么改？</p>
+        <p>• 分钟级切片 + 事件归因 + 自动诊断</p>
+        <span class="tag" style="background:#45B7D1;">5个模块：总览/漏斗/分钟/商品/人群</span>
+      </div>
+      <div class="right">
+        <h4>核心模块</h4>
+        <div class="item">📊 实时总览（分钟级趋势）</div>
+        <div class="item">🔻 成交漏斗（流失分析）</div>
+        <div class="item">⏱️ 分钟级复盘（切片归因）</div>
+        <div class="item">🛒 商品分析（问题归类）</div>
+        <div class="item">👥 人群洞察（高价值人群）</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>抖音直播数据分析平台 - 简图原型</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f2f5; padding: 20px; }
+
+.page { width: 1400px; margin: 0 auto 40px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; }
+.page-title { background: #1a1a2e; color: #fff; padding: 16px 24px; font-size: 18px; font-weight: bold; }
+
+/* ============ 图1：整体架构 ============ */
+.arch-container { padding: 40px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.arch-layer { width: 1200px; border-radius: 12px; padding: 24px; position: relative; }
+.arch-layer-1 { background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%); border: 2px solid #FF6B6B; }
+.arch-layer-2 { background: linear-gradient(135deg, #f0fffc 0%, #e5f5f5 100%); border: 2px solid #4ECDC4; }
+.arch-layer-3 { background: linear-gradient(135deg, #f0f8ff 0%, #e5f0f5 100%); border: 2px solid #45B7D1; }
+
+.arch-badge { position: absolute; top: -12px; left: 20px; padding: 6px 16px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 14px; }
+.badge-1 { background: #FF6B6B; }
+.badge-2 { background: #4ECDC4; }
+.badge-3 { background: #45B7D1; }
+
+.arch-content { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.arch-left { flex: 1; }
+.arch-left h3 { font-size: 20px; color: #333; margin-bottom: 8px; }
+.arch-left p { font-size: 14px; color: #666; line-height: 2; }
+.arch-right { width: 300px; background: rgba(255,255,255,0.7); border-radius: 8px; padding: 16px; }
+.arch-right h4 { font-size: 13px; color: #888; margin-bottom: 12px; font-weight: normal; }
+.arch-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 13px; color: #555; border-bottom: 1px dashed #ddd; }
+.arch-item:last-child { border-bottom: none; }
+.arch-arrow { text-align: center; font-size: 24px; color: #bbb; margin: -8px 0; }
+.arch-page-tag { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-top: 8px; }
+.tag-1 { background: #FF6B6B; color: #fff; }
+.tag-2 { background: #4ECDC4; color: #fff; }
+.tag-3 { background: #45B7D1; color: #fff; }
+
+/* ============ 图2：实时总览页面 ============ */
+.overview { display: flex; height: 700px; }
+.sidebar { width: 200px; background: #16213e; padding: 16px 0; }
+.sidebar-item { padding: 12px 24px; color: #8899aa; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.sidebar-item.active { color: #45B7D1; background: rgba(69,183,209,0.1); border-left: 3px solid #45B7D1; }
+.sidebar-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+.main { flex: 1; padding: 20px; background: #f5f6fa; overflow: auto; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.header h2 { font-size: 18px; color: #333; }
+.header .meta { font-size: 13px; color: #888; }
+
+.metrics-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.metric-card { background: #fff; border-radius: 10px; padding: 16px; min-width: 140px; flex: 1; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.metric-card .name { font-size: 12px; color: #888; margin-bottom: 8px; }
+.metric-card .value { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 4px; }
+.metric-card .trend { font-size: 12px; font-weight: bold; }
+.metric-card .trend.up { color: #ff4757; }
+.metric-card .trend.down { color: #2ed573; }
+
+.chart-section { display: flex; gap: 16px; margin-bottom: 20px; }
+.chart-box { background: #fff; border-radius: 10px; padding: 20px; flex: 1; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.chart-box h3 { font-size: 14px; color: #333; margin-bottom: 16px; font-weight: bold; }
+.chart-box.wide { flex: 2; }
+
+/* 模拟图表 */
+.chart-area { height: 200px; position: relative; }
+.chart-line { position: absolute; bottom: 0; left: 0; right: 0; height: 180px; }
+.bar-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 100%; padding: 0 10px; }
+.bar { width: 8px; background: #45B7D1; border-radius: 2px 2px 0 0; opacity: 0.6; }
+.line-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+.line-path { fill: none; stroke: #FF6B6B; stroke-width: 2; }
+.line-path-2 { fill: none; stroke: #4ECDC4; stroke-width: 2; }
+.event-marker { position: absolute; top: 10px; width: 2px; height: 160px; background: #FF6B6B; opacity: 0.5; }
+.event-label { position: absolute; top: 0; font-size: 10px; color: #FF6B6B; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #FF6B6B; }
+
+.diagnosis-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+.diagnosis-item:last-child { border-bottom: none; }
+.diagnosis-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.diagnosis-icon.warn { background: #fff3e0; }
+.diagnosis-icon.good { background: #e8f5e9; }
+.diagnosis-icon.info { background: #e3f2fd; }
+.diagnosis-text { flex: 1; }
+.diagnosis-text .title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 2px; }
+.diagnosis-text .desc { font-size: 12px; color: #888; }
+.diagnosis-action { padding: 4px 12px; border-radius: 12px; font-size: 11px; white-space: nowrap; }
+.action-warn { background: #fff3e0; color: #ff6b00; }
+.action-good { background: #e8f5e9; color: #2e7d32; }
+
+.bottom-section { display: flex; gap: 16px; }
+.bottom-card { background: #fff; border-radius: 10px; padding: 16px; flex: 1; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.bottom-card h4 { font-size: 13px; color: #333; margin-bottom: 12px; font-weight: bold; }
+.funnel-step { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+.funnel-step:last-child { border-bottom: none; }
+.funnel-bar { height: 24px; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; color: #fff; font-size: 11px; font-weight: bold; }
+.funnel-info { margin-left: 10px; font-size: 12px; color: #666; }
+
+/* ============ 图3：分钟级复盘 ============ */
+.minute-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.minute-table th { background: #f8f9fa; padding: 10px 12px; text-align: left; color: #666; font-weight: 600; border-bottom: 2px solid #e0e0e0; }
+.minute-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; color: #333; }
+.minute-table tr:hover { background: #f8f9fa; }
+.minute-tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+.tag-good { background: #e8f5e9; color: #2e7d32; }
+.tag-bad { background: #ffebee; color: #c62828; }
+.tag-normal { background: #f5f5f5; color: #666; }
+
+/* ============ 图4：诊断归因流程 ============ */
+.flow-container { padding: 40px; }
+.flow-start { width: 280px; margin: 0 auto 30px; background: #FF6B6B; color: #fff; padding: 16px 24px; border-radius: 30px; text-align: center; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(255,107,107,0.3); }
+.flow-levels { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; }
+.flow-box { width: 280px; border-radius: 12px; padding: 20px; position: relative; }
+.flow-box-1 { background: #fff0f0; border: 2px solid #FF6B6B; }
+.flow-box-2 { background: #f0fffc; border: 2px solid #4ECDC4; }
+.flow-box-3 { background: #f0f8ff; border: 2px solid #45B7D1; }
+.flow-box h4 { font-size: 15px; margin-bottom: 12px; font-weight: bold; }
+.flow-box-1 h4 { color: #FF6B6B; }
+.flow-box-2 h4 { color: #4ECDC4; }
+.flow-box-3 h4 { color: #45B7D1; }
+.flow-box ul { list-style: none; }
+.flow-box li { padding: 6px 0; font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px; }
+.flow-box li::before { content: '•'; font-size: 16px; }
+.flow-box-1 li::before { color: #FF6B6B; }
+.flow-box-2 li::before { color: #4ECDC4; }
+.flow-box-3 li::before { color: #45B7D1; }
+.flow-result { margin-top: 12px; padding: 8px 12px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 12px; font-weight: bold; }
+.flow-arrow-down { text-align: center; font-size: 30px; color: #ccc; margin: -10px 0; }
+
+.flow-box-4 { width: 400px; margin: 0 auto; background: #fff8e1; border: 2px solid #FFA502; }
+.flow-box-4 h4 { color: #FFA502; }
+.flow-box-4 li::before { color: #FFA502; }
+
+.rules-section { background: #f8f9fa; border-radius: 12px; padding: 24px; margin-top: 20px; }
+.rules-section h3 { font-size: 16px; color: #333; margin-bottom: 16px; }
+.rule-card { display: flex; gap: 20px; margin-bottom: 16px; padding: 16px; background: #fff; border-radius: 8px; border-left: 4px solid #FF6B6B; }
+.rule-card:last-child { margin-bottom: 0; }
+.rule-if { width: 200px; font-size: 13px; color: #666; }
+.rule-then { flex: 1; }
+.rule-then .label { font-size: 12px; color: #FF6B6B; font-weight: bold; margin-bottom: 4px; }
+.rule-then .desc { font-size: 13px; color: #333; }
+
+</style>
+</head>
+<body>
+
+<!-- ==================== 图1：整体架构 ==================== -->
+<div class="page">
+  <div class="page-title">📐 图1：整体架构（三层漏斗）</div>
+  <div class="arch-container">
+    
+    <div class="arch-layer arch-layer-1">
+      <div class="arch-badge badge-1">L1 概览层</div>
+      <div class="arch-content">
+        <div class="arch-left">
+          <h3>达人看板</h3>
+          <p>• 今天谁播得好？谁出了问题？<br>• 状态标签：🔥优秀 / ⚠️异常 / 🚨严重</p>
+          <span class="arch-page-tag tag-1">页面：达人列表</span>
+        </div>
+        <div class="arch-right">
+          <h4>核心数据</h4>
+          <div class="arch-item">📊 总GMV / 总场观 / 总订单</div>
+          <div class="arch-item">👤 达人列表（排序+筛选）</div>
+          <div class="arch-item">🏷️ 异常状态自动标记</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="arch-arrow">⬇</div>
+    
+    <div class="arch-layer arch-layer-2">
+      <div class="arch-badge badge-2">L2 场次层</div>
+      <div class="arch-content">
+        <div class="arch-left">
+          <h3>直播列表 + 单场卡片</h3>
+          <p>• 这场直播打几分？哪里及格哪里不及格？<br>• 综合评分：流量/转化/商品/留存 四维</p>
+          <span class="arch-page-tag tag-2">页面：直播卡片</span>
+        </div>
+        <div class="arch-right">
+          <h4>核心数据</h4>
+          <div class="arch-item">⭐ 综合评分（0-100）</div>
+          <div class="arch-item">📈 GMV / 场观 / ROI 趋势</div>
+          <div class="arch-item">⚠️ 异常项自动摘要</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="arch-arrow">⬇</div>
+    
+    <div class="arch-layer arch-layer-3">
+      <div class="arch-badge badge-3">L3 细节层</div>
+      <div class="arch-content">
+        <div class="arch-left">
+          <h3>单场深度复盘</h3>
+          <p>• 什么时间点出了什么问题？怎么改？<br>• 分钟级切片 + 事件归因 + 自动诊断</p>
+          <span class="arch-page-tag tag-3">5个模块：总览/漏斗/分钟/商品/人群</span>
+        </div>
+        <div class="arch-right">
+          <h4>核心模块</h4>
+          <div class="arch-item">📊 实时总览（分钟级趋势）</div>
+          <div class="arch-item">🔻 成交漏斗（流失分析）</div>
+          <div class="arch-item">⏱️ 分钟级复盘（切片归因）</div>
+          <div class="arch-item">🛒 商品分析（问题归类）</div>
+          <div class="arch-item">👥 人群洞察（高价值人群）</div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ==================== 图2：实时总览页面 ==================== -->
+<div class="page">
+  <div class="page-title">📊 图2：实时总览页面（核心看板）</div>
+  <div class="overview">
+    <div class="sidebar">
+      <div class="sidebar-item active"><span class="sidebar-icon" style="background:#45B7D1;color:#fff;">📊</span> 实时总览</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#ff6b6b;color:#fff;">🔻</span> 成交漏斗</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#4ECDC4;color:#fff;">⏱</span> 分钟级复盘</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#FFA502;color:#fff;">🛒</span> 商品分析</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#9b59b6;color:#fff;">👥</span> 人群洞察</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#3498db;color:#fff;">💬</span> 评论洞察</div>
+      <div class="sidebar-item"><span class="sidebar-icon" style="background:#e74c3c;color:#fff;">🩺</span> 直播诊断</div>
+    </div>
+    <div class="main">
+      <div class="header">
+        <h2>🟢 阳澄湖大闸蟹蟹卡专场 <span style="font-size:13px;color:#888;font-weight:normal;">| 开播: 2025-07-20 14:00 | 时长: 02:35:42</span></h2>
+        <div class="meta">对比: 较上一场 | 粒度: 1分钟 | 自动刷新</div>
+      </div>
+      
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="name">💰 成交金额</div>
+          <div class="value">¥186,560</div>
+          <div class="trend up">↑ 23.5%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">📦 成交订单</div>
+          <div class="value">1,248</div>
+          <div class="trend up">↑ 18.6%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">👤 成交人数</div>
+          <div class="value">1,036</div>
+          <div class="trend up">↑ 15.3%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">🏷️ 客单价</div>
+          <div class="value">¥179.35</div>
+          <div class="trend up">↑ 5.7%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">👥 在线人数</div>
+          <div class="value">328</div>
+          <div class="trend up">↑ 12.1%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">👀 场观人数</div>
+          <div class="value">28,650</div>
+          <div class="trend up">↑ 27.3%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">⏱️ 人均停留</div>
+          <div class="value">01:32</div>
+          <div class="trend down">↓ 8.6%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">📈 GPM</div>
+          <div class="value">6,516</div>
+          <div class="trend up">↑ 24.8%</div>
+        </div>
+        <div class="metric-card">
+          <div class="name">💹 ROI</div>
+          <div class="value">2.85</div>
+          <div class="trend up">↑ 0.38</div>
+        </div>
+      </div>
+      
+      <div class="chart-section">
+        <div class="chart-box wide">
+          <h3>📈 分钟级趋势图</h3>
+          <div class="chart-area">
+            <div class="bar-chart">
+              <div class="bar" style="height:40%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:30%"></div><div class="bar" style="height:80%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:90%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:35%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:85%"></div><div class="bar" style="height:40%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:80%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:55%"></div>
+            </div>
+            <div class="line-overlay">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%;">
+                <polyline points="0,70 5,60 10,50 15,55 20,40 25,35 30,45 35,30 40,25 45,35 50,30 55,20 60,25 65,15 70,20 75,10 80,15 85,25 90,20 95,30" class="line-path"/>
+                <polyline points="0,80 5,75 10,70 15,65 20,60 25,55 30,50 35,45 40,40 45,35 50,30 55,25 60,20 65,15 70,10 75,15 80,20 85,25 90,30 95,35" class="line-path-2"/>
+              </svg>
+            </div>
+            <div class="event-marker" style="left:15%;">
+              <div class="event-label" style="left:-30px;">14:18 上架商品</div>
+            </div>
+            <div class="event-marker" style="left:45%;">
+              <div class="event-label" style="left:-30px;">15:05 推流加码</div>
+            </div>
+            <div class="event-marker" style="left:75%;">
+              <div class="event-label" style="left:-30px;">15:35 福袋互动</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:20px;margin-top:10px;font-size:11px;color:#888;">
+            <span>🔴 在线人数</span><span>🟢 成交金额</span><span>🔵 进房人数</span>
+          </div>
+        </div>
+        <div class="chart-box" style="width:320px;flex-shrink:0;">
+          <h3>🩺 实时诊断</h3>
+          <div class="diagnosis-item">
+            <div class="diagnosis-icon warn">⚠️</div>
+            <div class="diagnosis-text">
+              <div class="title">商品点击率偏低</div>
+              <div class="desc">27.3% vs 近7场均值 33.8%</div>
+            </div>
+            <div class="diagnosis-action action-warn">优化卖点</div>
+          </div>
+          <div class="diagnosis-item">
+            <div class="diagnosis-icon warn">⚠️</div>
+            <div class="diagnosis-text">
+              <div class="title">点击成交率不足</div>
+              <div class="desc">1.62% vs 近7场均值 2.35%</div>
+            </div>
+            <div class="diagnosis-action action-warn">优化价格</div>
+          </div>
+          <div class="diagnosis-item">
+            <div class="diagnosis-icon good">✅</div>
+            <div class="diagnosis-text">
+              <div class="title">退款率控制良好</div>
+              <div class="desc">2.18% 正常范围</div>
+            </div>
+            <div class="diagnosis-action action-good">保持</div>
+          </div>
+          <div class="diagnosis-item">
+            <div class="diagnosis-icon info">ℹ️</div>
+            <div class="diagnosis-text">
+              <div class="title">人均停留时长下降</div>
+              <div class="desc">01:32 vs 上一场 01:41</div>
+            </div>
+            <div class="diagnosis-action action-warn">优化开场</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-section">
+        <div class="bottom-card">
+          <h4>🔻 成交漏斗</h4>
+          <div class="funnel-step">
+            <div class="funnel-bar" style="width:100%;background:#FF6B6B;">曝光 1,268,560</div>
+            <div class="funnel-info">→ 4.92%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-bar" style="width:70%;background:#ff8e8e;">进房 62,458</div>
+            <div class="funnel-info">→ 45.86%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-bar" style="width:50%;background:#4ECDC4;">停留 28,650</div>
+            <div class="funnel-info">→ 83.27%</div>
+          </div>
+          <div class="funnel-step">
+            <div class="funnel-bar" style="width:35%;background:#7eddd8;">商品曝光 23,860</div>
+          </div>
+        </div>
+        <div class="bottom-card">
+          <h4>🛒 商品 TOP5</h4>
+          <div style="font-size:12px;color:#555;line-height:2.2;">
+            <div><span style="display:inline-block;width:20px;height:20px;background:#FF6B6B;color:#fff;border-radius:4px;text-align:center;line-height:20px;font-size:11px;margin-right:8px;">1</span>大闸蟹礼盒A <span style="float:right;color:#333;font-weight:bold;">¥90,720</span></div>
+            <div><span style="display:inline-block;width:20px;height:20px;background:#ff8e8e;color:#fff;border-radius:4px;text-align:center;line-height:20px;font-size:11px;margin-right:8px;">2</span>大闸蟹礼盒B <span style="float:right;color:#333;font-weight:bold;">¥55,980</span></div>
+            <div><span style="display:inline-block;width:20px;height:20px;background:#4ECDC4;color:#fff;border-radius:4px;text-align:center;line-height:20px;font-size:11px;margin-right:8px;">3</span>大闸蟹4对装 <span style="float:right;color:#333;font-weight:bold;">¥37,650</span></div>
+            <div><span style="display:inline-block;width:20px;height:20px;background:#7eddd8;color:#fff;border-radius:4px;text-align:center;line-height:20px;font-size:11px;margin-right:8px;">4</span>大闸蟹8只装 <span style="float:right;color:#333;font-weight:bold;">¥27,730</span></div>
+          </div>
+        </div>
+        <div class="bottom-card">
+          <h4>👥 人群洞察</h4>
+          <div style="font-size:12px;color:#555;line-height:2.2;">
+            <div>👩 女性 58.1% | 购买占比 64.2%</div>
+            <div>👨 男性 41.9% | 购买占比 35.8%</div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+              <div>高价值人群：女性 26-35岁 新一线</div>
+              <div>购买转化指数：3.28（高于均值）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 图3：分钟级复盘 ==================== -->
+<div class="page">
+  <div class="page-title">⏱️ 图3：分钟级复盘（核心切片）</div>
+  <div style="padding:24px;background:#f5f6fa;">
+    <div style="display:flex;gap:16px;margin-bottom:20px;">
+      <div class="chart-box" style="flex:2;">
+        <h3>时间分段表现（5分钟粒度）</h3>
+        <div class="chart-area">
+          <div class="bar-chart">
+            <div class="bar" style="height:50%;background:#FF6B6B;"></div>
+            <div class="bar" style="height:80%;background:#FF6B6B;"></div>
+            <div class="bar" style="height:60%;background:#4ECDC4;"></div>
+            <div class="bar" style="height:40%;background:#FF6B6B;"></div>
+            <div class="bar" style="height:70%;background:#4ECDC4;"></div>
+            <div class="bar" style="height:90%;background:#4ECDC4;"></div>
+            <div class="bar" style="height:30%;background:#FF6B6B;"></div>
+            <div class="bar" style="height:55%;background:#4ECDC4;"></div>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:0 10px;font-size:10px;color:#888;">
+            <span>14:00</span><span>14:30</span><span>15:00</span><span>15:30</span><span>16:00</span>
+          </div>
+          <div class="event-marker" style="left:12%;height:140px;">
+            <div class="event-label" style="left:-20px;font-size:9px;">开场福利</div>
+          </div>
+          <div class="event-marker" style="left:50%;height:140px;">
+            <div class="event-label" style="left:-20px;font-size:9px;">福袋互动</div>
+          </div>
+          <div class="event-marker" style="left:87%;height:140px;">
+            <div class="event-label" style="left:-20px;font-size:9px;">切换主播</div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-box" style="width:300px;flex-shrink:0;">
+        <h3>🏆 Top 3 高转化片段</h3>
+        <div style="font-size:12px;line-height:2;">
+          <div style="padding:8px;background:#e8f5e9;border-radius:8px;margin-bottom:8px;">
+            <div style="font-weight:bold;color:#2e7d32;">1. 15:55-16:05 福袋+催单</div>
+            <div style="color:#666;font-size:11px;">GMV ¥28,650 | 成交率 5.82%</div>
+          </div>
+          <div style="padding:8px;background:#e8f5e9;border-radius:8px;margin-bottom:8px;">
+            <div style="font-weight:bold;color:#2e7d32;">2. 15:20-15:30 售后承诺</div>
+            <div style="color:#666;font-size:11px;">GMV ¥24,380 | 成交率 4.91%</div>
+          </div>
+          <div style="padding:8px;background:#e8f5e9;border-radius:8px;">
+            <div style="font-weight:bold;color:#2e7d32;">3. 14:50-15:00 产地背书</div>
+            <div style="color:#666;font-size:11px;">GMV ¥18,760 | 成交率 4.32%</div>
+          </div>
+        </div>
+        <h3 style="margin-top:16px;">🔴 Top 2 掉人片段</h3>
+        <div style="font-size:12px;line-height:2;">
+          <div style="padding:8px;background:#ffebee;border-radius:8px;margin-bottom:8px;">
+            <div style="font-weight:bold;color:#c62828;">1. 16:20-16:30 切换主播</div>
+            <div style="color:#666;font-size:11px;">掉出率 42.3% | 流失 11,248</div>
+          </div>
+          <div style="padding:8px;background:#ffebee;border-radius:8px;">
+            <div style="font-weight:bold;color:#c62828;">2. 14:30-14:40 价格机制</div>
+            <div style="color:#666;font-size:11px;">掉出率 28.7% | 流失 5,962</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-box" style="margin-bottom:16px;">
+      <h3>分段复盘明细表（5分钟粒度）</h3>
+      <table class="minute-table">
+        <thead>
+          <tr><th>时间段</th><th>主讲商品</th><th>主播动作</th><th>进房人数</th><th>平均在线</th><th>点击率</th><th>成交率</th><th>GMV</th><th>结论</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>14:00-14:05</td><td>大闸蟹礼盒</td><td>开场欢迎+福利预告</td><td>3,248</td><td>2,156</td><td>6.28%</td><td>1.82%</td><td>¥8,650</td><td><span class="minute-tag tag-good">开场福利拉新有效</span></td></tr>
+          <tr><td>14:05-14:10</td><td>大闸蟹礼盒</td><td>开场福利+限时秒杀</td><td>5,216</td><td>3,487</td><td>9.61%</td><td>2.53%</td><td>¥13,260</td><td><span class="minute-tag tag-good">秒杀带动点击转化</span></td></tr>
+          <tr><td>14:10-14:15</td><td>大闸蟹礼盒</td><td>用户互动+优惠提醒</td><td>4,892</td><td>3,215</td><td>7.24%</td><td>2.21%</td><td>¥10,580</td><td><span class="minute-tag tag-good">互动提升在线</span></td></tr>
+          <tr><td>14:15-14:20</td><td>大闸蟹礼盒</td><td>价格机制讲解</td><td>4,656</td><td>3,102</td><td>6.18%</td><td>1.76%</td><td>¥7,920</td><td><span class="minute-tag tag-normal">价格机制节奏略长</span></td></tr>
+          <tr><td>14:20-14:25</td><td>大闸蟹卡券</td><td>卡券权益讲解</td><td>4,208</td><td>2,856</td><td>5.14%</td><td>1.63%</td><td>¥6,420</td><td><span class="minute-tag tag-bad">卡券认知偏低</span></td></tr>
+          <tr><td>14:25-14:30</td><td>大闸蟹礼盒</td><td>组合推荐+赠品</td><td>4,520</td><td>2,980</td><td>7.85%</td><td>2.15%</td><td>¥9,850</td><td><span class="minute-tag tag-good">组合推荐有效</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="display:flex;gap:16px;">
+      <div class="chart-box" style="flex:1;">
+        <h3>🏆 高效话术/动作 TOP 5</h3>
+        <table class="minute-table">
+          <thead><tr><th>话术/动作</th><th>出现时段</th><th>触发效果</th><th>应用建议</th></tr></thead>
+          <tbody>
+            <tr><td>福袋互动+倒计时</td><td>15:55-16:05</td><td>成交率5.82% GMV¥28,650</td><td><span class="minute-tag tag-good">高转化时段优先使用</span></td></tr>
+            <tr><td>售后承诺（坏蟹包赔）</td><td>15:20-15:30</td><td>成交率4.91% 信任度提升</td><td><span class="minute-tag tag-good">价格介绍后及时强化</span></td></tr>
+            <tr><td>产地溯源展示</td><td>14:50-15:00</td><td>点击率8.73% 停留提升</td><td><span class="minute-tag tag-good">用户进入高峰时段使用</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="chart-box" style="flex:1;">
+        <h3>🔴 问题片段复盘 TOP 3</h3>
+        <table class="minute-table">
+          <thead><tr><th>问题时段</th><th>主要问题</th><th>影响数据</th><th>优化建议</th></tr></thead>
+          <tbody>
+            <tr><td>16:20-16:30 切换主播</td><td>节奏断层，用户流失严重</td><td>掉出率42.3%</td><td><span class="minute-tag tag-bad">切换前预告+衔接话术</span></td></tr>
+            <tr><td>14:30-14:40 价格机制</td><td>内容过长，缺少互动</td><td>掉出率28.7%</td><td><span class="minute-tag tag-bad">拆分讲解+增加互动</span></td></tr>
+            <tr><td>16:05-16:15 卡券讲解</td><td>用户兴趣低，转化弱</td><td>点击率3.62%</td><td><span class="minute-tag tag-bad">优化话术+强调使用场景</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 图4：诊断归因流程 ==================== -->
+<div class="page">
+  <div class="page-title">🩺 图4：GMV 诊断归因流程 + 规则引擎</div>
+  <div class="flow-container">
+    
+    <div class="flow-start">GMV 低于预期？</div>
+    <div class="flow-arrow-down">⬇</div>
+    
+    <div class="flow-levels">
+      <div class="flow-box flow-box-1">
+        <h4>第一层：流量问题？</h4>
+        <ul>
+          <li>场观 < 均值50%？</li>
+          <li>进房率 < 均值？</li>
+        </ul>
+        <div class="flow-result" style="color:#FF6B6B;">→ 封面/标题问题 → 先解决流量</div>
+      </div>
+      <div class="flow-box flow-box-2">
+        <h4>第二层：承接问题？</h4>
+        <ul>
+          <li>停留时长 < 均值？</li>
+          <li>在线持续下滑？</li>
+        </ul>
+        <div class="flow-result" style="color:#4ECDC4;">→ 内容/节奏问题 → 优化开场话术</div>
+      </div>
+      <div class="flow-box flow-box-3">
+        <h4>第三层：商品问题？</h4>
+        <ul>
+          <li>点击率 < 均值？</li>
+          <li>成交率 < 均值？</li>
+          <li>退款率 > 均值？</li>
+        </ul>
+        <div class="flow-result" style="color:#45B7D1;">→ 商品/价格/信任问题</div>
+      </div>
+    </div>
+    
+    <div class="flow-arrow-down">⬇</div>
+    
+    <div class="flow-box flow-box-4">
+      <h4>第四层：转化问题？</h4>
+      <ul>
+        <li>下单率/支付率 < 均值？</li>
+        <li>客单价 < 均值？</li>
+      </ul>
+      <div class="flow-result" style="color:#FFA502;">→ 临门一脚问题 → 优化话术/商品组合</div>
+    </div>
+    
+    <div class="rules-section">
+      <h3>🔧 诊断规则引擎（核心逻辑）</h3>
+      <div class="rule-card">
+        <div class="rule-if">IF 商品点击率 < 近7场均值 × 0.8</div>
+        <div class="rule-then">
+          <div class="label">THEN 标记：商品点击率偏低</div>
+          <div class="desc">可能原因：商品讲解深度不足 / 商品卡位置靠下 / 互动过多<br>
+          建议行动：优化卖点提炼 + 核心商品卡前置 + 聚焦商品讲解<br>
+          预期提升：5% - 15%</div>
+        </div>
+      </div>
+      <div class="rule-card" style="border-left-color:#4ECDC4;">
+        <div class="rule-if">IF 点击成交率 < 近7场均值 × 0.7</div>
+        <div class="rule-then">
+          <div class="label" style="color:#4ECDC4;">THEN 标记：价格或详情页转化有问题</div>
+          <div class="desc">可能原因：价格敏感度高 / 详情页信息不足 / 信任度不够<br>
+          建议行动：优化价格策略 + 强化售后承诺 + 增加信任背书<br>
+          预期提升：10% - 20%</div>
+        </div>
+      </div>
+      <div class="rule-card" style="border-left-color:#45B7D1;">
+        <div class="rule-if">IF 人均停留时长 < 近7场均值 × 0.8</div>
+        <div class="rule-then">
+          <div class="label" style="color:#45B7D1;">THEN 标记：直播间承接能力不足</div>
+          <div class="desc">可能原因：开场话术不够吸引 / 节奏拖沓 / 互动不足<br>
+          建议行动：优化开场钩子 + 增加互动频率 + 优化节奏<br>
+          预期提升：8% - 15%</div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+</body>
+</html>
