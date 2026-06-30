@@ -892,9 +892,9 @@
                 <strong>不自动递交法院</strong>
                 <span>微信、邮件等非线上递交需确认</span>
               </button>
-              <button class="decision-card" data-decision-group="autoNormal">
-                <strong>自动兜底</strong>
-                <span>系统自动递交</span>
+              <button class="decision-card" data-decision-group="staleSubmit">
+                <strong>近一个月未递交法院</strong>
+                <span>最近递交超过 30 天或从未递交</span>
               </button>
             </div>
           </div>
@@ -1041,7 +1041,7 @@
         judgments: 520,
         submitMode: "自动递交",
         tags: ["线上友好"],
-        lastSubmit: "2026-06-22",
+        lastSubmit: "2026-05-22",
         planSubmit: "2026-06-26",
         lastFollow: "2026-06-18",
         caseOwners: ["王律助", "陈律助", "我负责的案件"],
@@ -1182,8 +1182,8 @@
         caseAmount: 740,
         lastManualReview: "2026-06-18",
         recommendedCase: "AJ-2026-0602",
-        recommendedAction: "系统兜底",
-        decisionReason: "自动递交稳定，人工无需优先查看。"
+        recommendedAction: "检查长期未递交",
+        decisionReason: "该法院近一个月未递交，需要确认是否存在遗漏或递交计划失效。"
       },
       sz: {
         acceptanceProfile: "待定",
@@ -1304,7 +1304,7 @@
         auditStatus: "未递交",
         acceptanceResult: "明确接收案件",
         taskType: "定时递交",
-        quickTag: "自动兜底",
+        quickTag: "近一个月未递交",
         mailCount: 0,
         mailStatus: "未邮寄",
         mailTime: "-",
@@ -1313,7 +1313,7 @@
         principal: 2493.73,
         claimAmount: 2528.47,
         spv: "上海浦泓商务咨询有限公司",
-        auditFeedback: "材料已齐备，等待系统按计划自动递交。"
+        auditFeedback: "近一个月未发生递交，需要确认是否存在遗漏或递交计划失效。"
       },
       sz: {
         caseId: "48436",
@@ -1445,13 +1445,18 @@
       return court.caseOwners.includes(owner);
     }
 
+    function hasNoSubmissionForMonth(court) {
+      return !court.lastSubmit || court.lastSubmit === "-" || daysSince(court.lastSubmit) >= 30;
+    }
+
     function getDecisionGroup(court) {
       if (court.profileChanged) return "profileChanged";
       if (court.auditExceptionCount > 0) return "auditException";
       if (court.pendingReviewOver10 > 0) return "auditOverdue";
       if (court.submitMode === "限量") return "limitedConfirm";
       if (court.submitMode === "不自动递交") return "nonAuto";
-      return "autoNormal";
+      if (hasNoSubmissionForMonth(court)) return "staleSubmit";
+      return "other";
     }
 
     function decisionGroupLabel(group) {
@@ -1461,15 +1466,20 @@
         limitedConfirm: "限量待确认",
         nonAuto: "不自动递交法院",
         profileChanged: "画像变化待递交",
-        autoNormal: "自动兜底"
+        staleSubmit: "近一个月未递交法院"
       };
       return labels[group] || "其他";
     }
 
     function decisionGroupMatches(court) {
       if (activeTab !== "submit") return true;
-      const group = getDecisionGroup(court);
-      return group === activeDecisionGroup;
+      if (activeDecisionGroup === "profileChanged") return court.profileChanged;
+      if (activeDecisionGroup === "auditException") return court.auditExceptionCount > 0;
+      if (activeDecisionGroup === "auditOverdue") return court.pendingReviewOver10 > 0;
+      if (activeDecisionGroup === "limitedConfirm") return court.submitMode === "限量";
+      if (activeDecisionGroup === "nonAuto") return court.submitMode === "不自动递交";
+      if (activeDecisionGroup === "staleSubmit") return hasNoSubmissionForMonth(court);
+      return true;
     }
 
     function submitModeMatches(court) {
@@ -1512,7 +1522,8 @@
           auditOverdue: 3,
           limitedConfirm: 4,
           nonAuto: 5,
-          autoNormal: 6
+          staleSubmit: 6,
+          other: 7
         };
         result = result.sort((a, b) =>
           groupWeight[getDecisionGroup(a)] - groupWeight[getDecisionGroup(b)] ||
