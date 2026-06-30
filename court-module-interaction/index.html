@@ -1,0 +1,2145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>法院运营管理交互稿</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --line: #d8dee8;
+      --line-strong: #b8c1cf;
+      --text: #202938;
+      --muted: #667085;
+      --ink: #101828;
+      --blue: #1d4ed8;
+      --blue-soft: #eaf1ff;
+      --green: #147a5c;
+      --green-soft: #e8f6ef;
+      --amber: #a15c07;
+      --amber-soft: #fff3db;
+      --red: #b42318;
+      --red-soft: #fde8e7;
+      --gray-soft: #eef2f6;
+      --shadow: 0 10px 26px rgba(16, 24, 40, 0.10);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 1280px;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 216px 1fr;
+    }
+
+    .sidebar {
+      background: #172033;
+      color: #fff;
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef4ff;
+      color: #172033;
+      font-weight: 800;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 12px;
+      color: #c2c9d6;
+      line-height: 18px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 10px;
+      color: #d6dce8;
+      border-radius: 7px;
+      text-align: left;
+    }
+
+    .nav button.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .count {
+      min-width: 22px;
+      height: 20px;
+      border-radius: 10px;
+      display: inline-grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .main {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .btn {
+      height: 36px;
+      border-radius: 6px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .btn.ghost {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .modebar {
+      margin: 20px 20px 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mode-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mode-label {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .mode-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-tab {
+      height: 38px;
+      min-width: 110px;
+      border-radius: 6px;
+      padding: 0 14px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 600;
+    }
+
+    .mode-tab.active {
+      color: #fff;
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .global-owner {
+      display: grid;
+      grid-template-columns: auto 180px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .content {
+      min-width: 0;
+      padding: 14px 20px 20px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .filters {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1.55fr 1.55fr 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: grid;
+      gap: 6px;
+    }
+
+    .filter-group label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .input, .select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      padding: 0 10px;
+    }
+
+    .date-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .filter-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .tag-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-block {
+      display: grid;
+      gap: 10px;
+    }
+
+    .decision-filter {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .decision-card {
+      min-height: 72px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 9px 10px;
+      display: grid;
+      align-content: start;
+      gap: 5px;
+      text-align: left;
+    }
+
+    .decision-card strong {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .decision-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 17px;
+      white-space: normal;
+    }
+
+    .decision-card.active {
+      border-color: #9db9ff;
+      background: var(--blue-soft);
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+
+    .decision-card.active strong {
+      color: var(--blue);
+    }
+
+    .chip {
+      height: 28px;
+      border-radius: 14px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      color: #465568;
+      background: var(--gray-soft);
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+
+    .chip.active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #b7ccff;
+    }
+
+    .tab-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab {
+      height: 46px;
+      min-width: 104px;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      padding: 0 12px;
+    }
+
+    .tab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      font-weight: 600;
+    }
+
+    .sort-note {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 286px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1760px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 10px;
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      color: var(--muted);
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: #fbfdff;
+    }
+
+    .court-cell {
+      display: grid;
+      gap: 5px;
+      white-space: normal;
+      min-width: 230px;
+    }
+
+    .court-cell button {
+      text-align: left;
+      color: var(--blue);
+      font-weight: 600;
+      line-height: 19px;
+    }
+
+    .court-cell span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .core-data {
+      display: grid;
+      gap: 4px;
+      min-width: 180px;
+    }
+
+    .core-row {
+      display: flex;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .core-row strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .num {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .badge {
+      height: 22px;
+      border-radius: 11px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .badge.green { color: var(--green); background: var(--green-soft); }
+    .badge.amber { color: var(--amber); background: var(--amber-soft); }
+    .badge.red { color: var(--red); background: var(--red-soft); }
+    .badge.blue { color: var(--blue); background: var(--blue-soft); }
+
+    .badge.gray { color: #475467; background: var(--gray-soft); }
+
+    .row-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      min-width: 180px;
+      white-space: normal;
+    }
+
+    .mini {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .help-tip {
+      position: relative;
+      width: 17px;
+      height: 17px;
+      margin-left: 4px;
+      border: 1px solid #b8c2d1;
+      border-radius: 50%;
+      color: #667085;
+      background: #fff;
+      font-size: 11px;
+      line-height: 15px;
+      text-align: center;
+      vertical-align: -1px;
+    }
+
+    .help-tip::after {
+      content: attr(data-tip);
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 50%;
+      z-index: 8;
+      width: 220px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #1f2937;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 18px;
+      white-space: normal;
+      transform: translateX(-50%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .help-tip:hover::after,
+    .help-tip:focus-visible::after {
+      opacity: 1;
+    }
+
+    .empty {
+      padding: 36px;
+      color: var(--muted);
+      text-align: center;
+      display: none;
+    }
+
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: flex-end;
+      background: rgba(15, 23, 42, 0.32);
+      z-index: 20;
+    }
+
+    .drawer-mask.open {
+      display: flex;
+    }
+
+    .drawer {
+      width: min(1380px, calc(100vw - 48px));
+      min-height: 100%;
+      background: #fff;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .drawer-head, .drawer-foot {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .drawer-foot {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-end;
+    }
+
+    .drawer-head h2 {
+      margin: 0;
+      font-size: 17px;
+      color: var(--ink);
+    }
+
+    .drawer-body {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .section h3 {
+      margin: 0;
+      padding: 11px 12px;
+      color: var(--ink);
+      background: #f9fafb;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .section-body {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .kv span:first-child {
+      color: var(--muted);
+    }
+
+    .drawer-metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .drawer-metric {
+      min-width: 0;
+      padding: 10px;
+      background: #f7f9fc;
+      border-radius: 6px;
+    }
+
+    .drawer-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .drawer-metric strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 22px;
+    }
+
+    .drawer-info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 24px;
+      row-gap: 10px;
+    }
+
+    .drawer-info-item {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .drawer-info-item > span:first-child {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .drawer-info-item > span:last-child {
+      color: var(--text);
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .section h3 .mini {
+      margin-left: 6px;
+      font-weight: 400;
+    }
+
+    .section-head {
+      padding: 11px 12px;
+      background: #f9fafb;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-title {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .section-title h3 {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .drawer-case-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .drawer-case-tab {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .drawer-case-tab.active {
+      color: var(--blue);
+      border-color: #b7ccff;
+      background: var(--blue-soft);
+    }
+
+    .drawer-case-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .drawer-case-table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 410px);
+    }
+
+    .drawer-case-table {
+      width: 100%;
+      min-width: 1560px;
+      font-size: 12px;
+    }
+
+    .drawer-case-table th,
+    .drawer-case-table td {
+      padding: 9px 10px;
+    }
+
+    .table-cell-stack {
+      display: grid;
+      gap: 3px;
+      white-space: normal;
+      min-width: 112px;
+    }
+
+    .table-cell-stack strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .table-cell-stack span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 17px;
+    }
+
+    .case-link {
+      color: var(--blue);
+      font-weight: 700;
+      text-align: left;
+      padding: 0;
+    }
+
+    .check-cell {
+      width: 36px;
+      text-align: center;
+    }
+
+    .case-note-cell {
+      max-width: 280px;
+      min-width: 220px;
+      white-space: normal;
+      line-height: 18px;
+    }
+
+    .case-note-cell span {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    @media (max-width: 1000px) {
+      .drawer {
+        width: 100vw;
+      }
+
+      .drawer-metrics,
+      .drawer-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-head,
+      .drawer-case-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .drawer-case-tabs {
+        justify-content: flex-start;
+      }
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+      z-index: 30;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">法</div>
+        <div>
+          <strong>诉讼运营台</strong>
+          <span>法院运营管理</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <button class="active"><span>▦</span><span>法院运营</span><span class="count">3000</span></button>
+        <button><span>□</span><span>案件池</span><span class="count">10w</span></button>
+        <button><span>◇</span><span>递交任务</span><span class="count">286</span></button>
+        <button><span>○</span><span>跟进任务</span><span class="count">173</span></button>
+        <button><span>!</span><span>异常处理</span><span class="count">42</span></button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="modebar">
+        <div class="mode-left">
+          <span class="mode-label">作业模式</span>
+          <div class="mode-tabs" id="tabs">
+            <button class="mode-tab active" data-tab="submit">递交工作台</button>
+            <button class="mode-tab" data-tab="follow">跟进工作台</button>
+          </div>
+        </div>
+        <div class="global-owner">
+          <span class="mode-label">案件负责人</span>
+          <select class="select" id="caseOwner">
+            <option value="我负责的案件">我负责的案件</option>
+            <option value="all">所有</option>
+            <option value="王律助">王律助</option>
+            <option value="李律师">李律师</option>
+            <option value="陈律助">陈律助</option>
+            <option value="赵纯涛">赵纯涛</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="panel filters">
+          <div class="filter-block" id="submitDecisionFilters">
+            <span class="mini">快筛</span>
+            <div class="decision-filter" id="decisionFilter">
+              <button class="decision-card active" data-decision-group="profileChanged">
+                <strong>画像变化待递交</strong>
+                <span>法院变可受理，需盘点案件递交</span>
+              </button>
+              <button class="decision-card" data-decision-group="auditException">
+                <strong>审核异常</strong>
+                <span>受理法院给了负面反馈（非转邮寄）</span>
+              </button>
+              <button class="decision-card" data-decision-group="auditOverdue">
+                <strong>审核逾期</strong>
+                <span>递交超过 10 个工作日仍无审核结果</span>
+              </button>
+              <button class="decision-card" data-decision-group="limitedConfirm">
+                <strong>限量待确认</strong>
+                <span>受理&amp;限量法院，需确认递交节奏</span>
+              </button>
+              <button class="decision-card" data-decision-group="nonAuto">
+                <strong>不自动递交法院</strong>
+                <span>微信、邮件等非线上递交需确认</span>
+              </button>
+              <button class="decision-card" data-decision-group="autoNormal">
+                <strong>自动兜底</strong>
+                <span>系统自动递交</span>
+              </button>
+            </div>
+          </div>
+          <div class="filter-grid">
+            <div class="filter-group">
+              <label>法院名称</label>
+              <input class="input" id="courtName" placeholder="输入法院名称" />
+            </div>
+            <div class="filter-group">
+              <label>受理画像</label>
+              <select class="select" id="acceptanceProfile">
+                <option value="all">全部</option>
+                <option value="受理">受理</option>
+                <option value="仅调解">仅调解</option>
+                <option value="待定">待定</option>
+                <option value="拒不受理">拒不受理</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>递交模式</label>
+              <select class="select" id="submitMode">
+                <option value="all">全部</option>
+                <option value="自动递交">自动递交</option>
+                <option value="限量">限量</option>
+                <option value="待定">待定</option>
+                <option value="不自动递交">不自动递交</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>计划递交时间</label>
+              <div class="date-pair">
+                <input class="input" type="date" id="planSubmitFrom" />
+                <input class="input" type="date" id="planSubmitTo" />
+              </div>
+            </div>
+            <div class="filter-group">
+              <label>最近递交时间</label>
+              <div class="date-pair">
+                <input class="input" type="date" id="lastSubmitFrom" />
+                <input class="input" type="date" id="lastSubmitTo" />
+              </div>
+            </div>
+            <div class="filter-group">
+              <label>待审核超期</label>
+              <select class="select" id="reviewOverdue">
+                <option value="all">全部</option>
+                <option value="yes">有超 10 天</option>
+                <option value="no">无超 10 天</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-footer">
+            <div class="tag-filter" id="tagFilter">
+              <span class="mini">法院标签</span>
+              <button class="chip" data-tag="重点法院">重点法院</button>
+              <button class="chip" data-tag="立案率低">立案率低</button>
+              <button class="chip" data-tag="反馈慢">反馈慢</button>
+              <button class="chip" data-tag="退件多">退件多</button>
+              <button class="chip" data-tag="材料严格">材料严格</button>
+              <button class="chip" data-tag="线上友好">线上友好</button>
+              <button class="chip" data-tag="需律师沟通">需律师沟通</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead id="tableHead"></thead>
+              <tbody id="courtRows"></tbody>
+            </table>
+            <div class="empty" id="empty">没有符合筛选条件的法院</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-mask" id="drawerMask">
+    <aside class="drawer">
+      <div class="drawer-head">
+        <h2 id="drawerTitle">法院详情</h2>
+        <button class="btn ghost" id="closeDrawer">关闭</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+      <div class="drawer-foot">
+        <button class="btn ghost" id="createFollow">生成跟进任务</button>
+        <button class="btn primary" id="createSubmit">生成递交任务</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast">已生成任务</div>
+
+  <script>
+    const today = new Date("2026-06-30T00:00:00+08:00");
+    const selectedTags = new Set();
+    const selectedCaseIds = new Set();
+    let activeTab = "submit";
+    let activeDecisionGroup = "profileChanged";
+    let activeCaseTab = "recommended";
+    let activeDrawerCourtId = null;
+
+    const courts = [
+      {
+        id: "pd",
+        name: "上海市浦东新区人民法院",
+        area: "上海",
+        provinceCity: "上海市 · 浦东新区",
+        remark: "材料要求严格，反馈周期偏长",
+        accept: 812,
+        filingRate: 78,
+        avgReviewDays: 9,
+        totalCases: 4286,
+        submitReview: 326,
+        review: 118,
+        filed: 2764,
+        abnormalClosed: 89,
+        judgments: 941,
+        submitMode: "需确认",
+        tags: ["重点法院", "反馈慢", "材料严格", "线上友好"],
+        lastSubmit: "2026-06-20",
+        planSubmit: "2026-06-28",
+        lastFollow: "2026-06-20",
+        caseOwners: ["王律助", "李律师", "赵纯涛", "我负责的案件"],
+        submitHistory: "近 30 天递交 184 件，退件 16 件，反馈周期较上月延长。",
+        followSuggestion: "计划递交前先复核材料要求，超过 10 件批量递交建议人工确认。"
+      },
+      {
+        id: "hz",
+        name: "杭州市西湖区人民法院",
+        area: "浙江",
+        provinceCity: "浙江省 · 杭州市",
+        remark: "线上递交稳定",
+        accept: 486,
+        filingRate: 86,
+        avgReviewDays: 6,
+        totalCases: 2180,
+        submitReview: 146,
+        review: 44,
+        filed: 1498,
+        abnormalClosed: 21,
+        judgments: 520,
+        submitMode: "自动递交",
+        tags: ["线上友好"],
+        lastSubmit: "2026-06-22",
+        planSubmit: "2026-06-26",
+        lastFollow: "2026-06-18",
+        caseOwners: ["王律助", "陈律助", "我负责的案件"],
+        submitHistory: "近 30 天递交 96 件，反馈稳定，邮寄和线上均可执行。",
+        followSuggestion: "按计划自动递交，月度跟进即可。"
+      },
+      {
+        id: "sz",
+        name: "深圳市南山区人民法院",
+        area: "广东",
+        provinceCity: "广东省 · 深圳市",
+        remark: "退件较多，需律师沟通",
+        accept: 312,
+        filingRate: 52,
+        avgReviewDays: 17,
+        totalCases: 3055,
+        submitReview: 418,
+        review: 203,
+        filed: 1244,
+        abnormalClosed: 156,
+        judgments: 612,
+        submitMode: "需确认",
+        tags: ["重点法院", "立案率低", "退件多", "需律师沟通"],
+        lastSubmit: "2026-06-10",
+        planSubmit: "2026-07-05",
+        lastFollow: "2026-05-20",
+        caseOwners: ["李律师", "赵纯涛"],
+        submitHistory: "近 30 天退件率明显上升，送达地址和主体材料被反复要求补强。",
+        followSuggestion: "超 30 天未形成有效跟进结论，应优先生成跟进任务并指派律师确认。"
+      },
+      {
+        id: "bj",
+        name: "北京市朝阳区人民法院",
+        area: "北京",
+        provinceCity: "北京市 · 朝阳区",
+        remark: "开庭信息同步较快",
+        accept: 533,
+        filingRate: 82,
+        avgReviewDays: 7,
+        totalCases: 2674,
+        submitReview: 122,
+        review: 63,
+        filed: 1786,
+        abnormalClosed: 44,
+        judgments: 704,
+        submitMode: "自动递交",
+        tags: ["重点法院", "线上友好"],
+        lastSubmit: "2026-06-19",
+        planSubmit: "2026-07-01",
+        lastFollow: "2026-06-01",
+        caseOwners: ["陈律助", "赵纯涛", "我负责的案件"],
+        submitHistory: "开庭信息同步较快，递交后需关注后续排期。",
+        followSuggestion: "超 15 天未跟进，建议检查开庭排期和案件台账同步。"
+      },
+      {
+        id: "nj",
+        name: "南京市玄武区人民法院",
+        area: "江苏",
+        provinceCity: "江苏省 · 南京市",
+        remark: "附件命名要求严格",
+        accept: 205,
+        filingRate: 73,
+        avgReviewDays: 11,
+        totalCases: 1268,
+        submitReview: 98,
+        review: 37,
+        filed: 814,
+        abnormalClosed: 36,
+        judgments: 283,
+        submitMode: "需确认",
+        tags: ["反馈慢", "材料严格"],
+        lastSubmit: "2026-06-05",
+        planSubmit: "2026-06-27",
+        lastFollow: "2026-06-12",
+        caseOwners: ["王律助", "李律师"],
+        submitHistory: "材料目录要求较细，批量递交前需检查附件命名。",
+        followSuggestion: "计划递交临近，先确认材料口径是否变化。"
+      },
+      {
+        id: "cd",
+        name: "成都市武侯区人民法院",
+        area: "四川",
+        provinceCity: "四川省 · 成都市",
+        remark: "反馈周期略慢",
+        accept: 164,
+        filingRate: 69,
+        avgReviewDays: 14,
+        totalCases: 980,
+        submitReview: 76,
+        review: 51,
+        filed: 601,
+        abnormalClosed: 27,
+        judgments: 196,
+        submitMode: "自动递交",
+        tags: ["反馈慢"],
+        lastSubmit: "2026-06-17",
+        planSubmit: "2026-06-30",
+        lastFollow: "2026-06-24",
+        caseOwners: ["陈律助", "我负责的案件"],
+        submitHistory: "反馈周期略慢但没有明显退件问题。",
+        followSuggestion: "最近 7 天已跟进，可等待计划递交。"
+      }
+    ];
+
+    const deliveryMeta = {
+      pd: {
+        acceptanceProfile: "受理",
+        submitMode: "自动递交",
+        submitChannel: "线上递交",
+        limitRule: "不限量",
+        pendingSubmit: 326,
+        pendingUnsubmitted: 248,
+        pendingRecovered: 42,
+        pendingRejected: 36,
+        onlinePendingReview: 118,
+        pendingReviewOver10: 18,
+        auditExceptionCount: 0,
+        profileChanged: false,
+        caseAmount: 1860,
+        lastManualReview: "2026-06-03",
+        recommendedCase: "AJ-2026-0620",
+        recommendedAction: "再次递交 1 件",
+        decisionReason: "递交超过 10 个工作日仍无审核结果，用再次递交推动审核。"
+      },
+      hz: {
+        acceptanceProfile: "受理",
+        submitMode: "自动递交",
+        submitChannel: "线上递交",
+        limitRule: "不限量",
+        pendingSubmit: 146,
+        pendingUnsubmitted: 112,
+        pendingRecovered: 18,
+        pendingRejected: 16,
+        onlinePendingReview: 44,
+        pendingReviewOver10: 0,
+        auditExceptionCount: 0,
+        profileChanged: false,
+        caseAmount: 740,
+        lastManualReview: "2026-06-18",
+        recommendedCase: "AJ-2026-0602",
+        recommendedAction: "系统兜底",
+        decisionReason: "自动递交稳定，人工无需优先查看。"
+      },
+      sz: {
+        acceptanceProfile: "待定",
+        submitMode: "待定",
+        submitChannel: "线上递交",
+        limitRule: "待确认",
+        pendingSubmit: 418,
+        pendingUnsubmitted: 281,
+        pendingRecovered: 63,
+        pendingRejected: 74,
+        onlinePendingReview: 203,
+        pendingReviewOver10: 42,
+        auditExceptionCount: 0,
+        profileChanged: true,
+        caseAmount: 3150,
+        lastManualReview: "2026-05-18",
+        recommendedCase: "AJ-2026-0611",
+        recommendedAction: "盘点可递交案件",
+        decisionReason: "法院画像从不受理转为待定，需要重新看哪些案件可递交。"
+      },
+      bj: {
+        acceptanceProfile: "受理",
+        submitMode: "自动递交",
+        submitChannel: "线上递交",
+        limitRule: "不限量",
+        pendingSubmit: 122,
+        pendingUnsubmitted: 96,
+        pendingRecovered: 14,
+        pendingRejected: 12,
+        onlinePendingReview: 63,
+        pendingReviewOver10: 0,
+        auditExceptionCount: 2,
+        profileChanged: false,
+        caseAmount: 980,
+        lastManualReview: "2026-06-01",
+        recommendedCase: "AJ-2026-0603",
+        recommendedAction: "复核不受理反馈"
+      },
+      nj: {
+        acceptanceProfile: "仅调解",
+        submitMode: "限量",
+        submitChannel: "邮件递交",
+        limitRule: "每月 1 件",
+        pendingSubmit: 98,
+        pendingUnsubmitted: 72,
+        pendingRecovered: 13,
+        pendingRejected: 13,
+        onlinePendingReview: 0,
+        pendingReviewOver10: 0,
+        auditExceptionCount: 0,
+        profileChanged: false,
+        caseAmount: 520,
+        lastManualReview: "2026-05-30",
+        recommendedCase: "AJ-2026-0528",
+        recommendedAction: "本月递交或申请延期",
+        decisionReason: "仅调解法院被月度限量卡控，需要确认本月是否递交。"
+      },
+      cd: {
+        acceptanceProfile: "受理",
+        submitMode: "不自动递交",
+        submitChannel: "邮寄递交",
+        limitRule: "不适用",
+        pendingSubmit: 76,
+        pendingUnsubmitted: 51,
+        pendingRecovered: 11,
+        pendingRejected: 14,
+        onlinePendingReview: 0,
+        pendingReviewOver10: 0,
+        auditExceptionCount: 0,
+        profileChanged: false,
+        caseAmount: 460,
+        lastManualReview: "2026-06-24",
+        recommendedCase: "AJ-2026-0624",
+        recommendedAction: "盘点线下递交",
+        decisionReason: "该法院不走系统自动递交，需要确认微信、邮寄或线下是否已处理。"
+      }
+    };
+
+    const submissionCaseSamples = {
+      pd: {
+        caseId: "53359",
+        orderId: "100006910",
+        defendantName: "徐佳铭",
+        defendantRegion: "上海市 · 浦东新区",
+        assistant: "王律",
+        lawyer: "徐律",
+        currentStatus: "待审核",
+        submitMethod: "线上递交",
+        submitCount: 1,
+        firstSubmit: "2026-06-16 00:11",
+        latestSubmit: "2026-06-16 00:11",
+        auditStatus: "审核中",
+        acceptanceResult: "有接收机会",
+        taskType: "定时递交",
+        quickTag: "审核逾期",
+        mailCount: 0,
+        mailStatus: "未邮寄",
+        mailTime: "-",
+        isFiled: false,
+        filingReason: "-",
+        principal: 6088.64,
+        claimAmount: 6255.86,
+        spv: "上海序洪商务咨询有限公司",
+        auditFeedback: "递交超过 10 个工作日仍无审核结果，等待再次递交推动审核。"
+      },
+      hz: {
+        caseId: "54096",
+        orderId: "100021544",
+        defendantName: "孙浩棋",
+        defendantRegion: "浙江省 · 杭州市",
+        assistant: "雷硕挺",
+        lawyer: "徐律",
+        currentStatus: "待提交",
+        submitMethod: "线上递交",
+        submitCount: 0,
+        firstSubmit: "-",
+        latestSubmit: "-",
+        auditStatus: "未递交",
+        acceptanceResult: "明确接收案件",
+        taskType: "定时递交",
+        quickTag: "自动兜底",
+        mailCount: 0,
+        mailStatus: "未邮寄",
+        mailTime: "-",
+        isFiled: false,
+        filingReason: "-",
+        principal: 2493.73,
+        claimAmount: 2528.47,
+        spv: "上海浦泓商务咨询有限公司",
+        auditFeedback: "材料已齐备，等待系统按计划自动递交。"
+      },
+      sz: {
+        caseId: "48436",
+        orderId: "100024696",
+        defendantName: "曾印平",
+        defendantRegion: "广东省 · 深圳市",
+        assistant: "王律",
+        lawyer: "刘律",
+        currentStatus: "待提交",
+        submitMethod: "线上递交",
+        submitCount: 1,
+        firstSubmit: "2026-03-03 15:18",
+        latestSubmit: "2026-06-21 00:36",
+        auditStatus: "待重新递交",
+        acceptanceResult: "有接收机会",
+        taskType: "画像变化待递交",
+        quickTag: "画像变化",
+        mailCount: 0,
+        mailStatus: "未邮寄",
+        mailTime: "-",
+        isFiled: false,
+        filingReason: "-",
+        principal: 25600,
+        claimAmount: 26255.74,
+        spv: "上海洲序商务咨询有限公司",
+        auditFeedback: "法院画像已由不受理转为待定，需要重新确认本案是否递交。"
+      },
+      bj: {
+        caseId: "53419",
+        orderId: "100057462",
+        defendantName: "贾丽丽",
+        defendantRegion: "北京市 · 朝阳区",
+        assistant: "郑晓鸿",
+        lawyer: "刘律",
+        currentStatus: "已立案",
+        submitMethod: "线上递交",
+        submitCount: 4,
+        firstSubmit: "2026-04-24 16:15",
+        latestSubmit: "2026-06-21 01:00",
+        auditStatus: "已立案",
+        acceptanceResult: "-",
+        taskType: "审查驳回",
+        quickTag: "已立案",
+        mailCount: 0,
+        mailStatus: "未邮寄",
+        mailTime: "-",
+        isFiled: true,
+        filingReason: "补充区域营业材料及金融资质证明后，法院审核通过并正式立案。",
+        principal: 906.92,
+        claimAmount: 920.01,
+        spv: "上海序洪商务咨询有限公司",
+        auditFeedback: "法院要求补充区域营业材料、金融资质证明及不良贷款转让批复文件。"
+      },
+      nj: {
+        caseId: "54369",
+        orderId: "100090873",
+        defendantName: "张杨",
+        defendantRegion: "江苏省 · 南京市",
+        assistant: "赵治宁",
+        lawyer: "董律",
+        currentStatus: "待确认",
+        submitMethod: "邮件递交",
+        submitCount: 1,
+        firstSubmit: "2026-04-24 16:24",
+        latestSubmit: "2026-04-24 16:24",
+        auditStatus: "待确认递交节奏",
+        acceptanceResult: "有接收机会",
+        taskType: "限量递交",
+        quickTag: "限量待确认",
+        mailCount: 0,
+        mailStatus: "未邮寄",
+        mailTime: "-",
+        isFiled: false,
+        filingReason: "-",
+        principal: 942.93,
+        claimAmount: 952.44,
+        spv: "上海嘉序商务咨询有限公司",
+        auditFeedback: "法院每月限量 1 件，本案需确认是否安排在本期递交。"
+      },
+      cd: {
+        caseId: "53595",
+        orderId: "100106806",
+        defendantName: "张思翔",
+        defendantRegion: "四川省 · 成都市",
+        assistant: "雷硕挺",
+        lawyer: "徐律",
+        currentStatus: "已立案",
+        submitMethod: "邮寄递交",
+        submitCount: 2,
+        firstSubmit: "2026-04-24 16:52",
+        latestSubmit: "2026-05-02 00:20",
+        auditStatus: "已立案",
+        acceptanceResult: "-",
+        taskType: "邮寄递交",
+        quickTag: "已立案",
+        mailCount: 2,
+        mailStatus: "已签收",
+        mailTime: "2026-05-06 15:37",
+        isFiled: true,
+        filingReason: "邮寄材料签收后完成形式审查，管辖及主体材料符合立案要求。",
+        principal: 11336.49,
+        claimAmount: 11451.84,
+        spv: "上海泓序商务咨询有限公司",
+        auditFeedback: "需人工确认材料是否已寄出，并补录快递单号和签收状态。"
+      }
+    };
+
+    courts.forEach((court) => {
+      Object.assign(court, deliveryMeta[court.id]);
+      court.submissionCase = submissionCaseSamples[court.id];
+    });
+
+    const el = (id) => document.getElementById(id);
+
+    function daysSince(dateString) {
+      const date = new Date(dateString + "T00:00:00+08:00");
+      return Math.floor((today - date) / 86400000);
+    }
+
+    function inRange(value, from, to) {
+      if (from && value < from) return false;
+      if (to && value > to) return false;
+      return true;
+    }
+
+    function ownerMatches(court) {
+      const owner = el("caseOwner").value;
+      if (owner === "all") return true;
+      return court.caseOwners.includes(owner);
+    }
+
+    function getDecisionGroup(court) {
+      if (court.profileChanged) return "profileChanged";
+      if (court.auditExceptionCount > 0) return "auditException";
+      if (court.pendingReviewOver10 > 0) return "auditOverdue";
+      if (court.submitMode === "限量") return "limitedConfirm";
+      if (court.submitMode === "不自动递交") return "nonAuto";
+      return "autoNormal";
+    }
+
+    function decisionGroupLabel(group) {
+      const labels = {
+        auditOverdue: "审核逾期",
+        auditException: "审核异常",
+        limitedConfirm: "限量待确认",
+        nonAuto: "不自动递交法院",
+        profileChanged: "画像变化待递交",
+        autoNormal: "自动兜底"
+      };
+      return labels[group] || "其他";
+    }
+
+    function decisionGroupMatches(court) {
+      if (activeTab !== "submit") return true;
+      const group = getDecisionGroup(court);
+      return group === activeDecisionGroup;
+    }
+
+    function submitModeMatches(court) {
+      const mode = el("submitMode").value;
+      return mode === "all" || court.submitMode === mode;
+    }
+
+    function acceptanceMatches(court) {
+      const acceptance = el("acceptanceProfile").value;
+      return acceptance === "all" || court.acceptanceProfile === acceptance;
+    }
+
+    function reviewOverdueMatches(court) {
+      const value = el("reviewOverdue").value;
+      if (value === "yes") return court.pendingReviewOver10 > 0;
+      if (value === "no") return court.pendingReviewOver10 === 0;
+      return true;
+    }
+
+    function getFilteredCourts() {
+      const name = el("courtName").value.trim();
+      let result = courts.filter((court) => {
+        const matchName = !name || court.name.includes(name);
+        const matchTags = [...selectedTags].every((tag) => court.tags.includes(tag));
+        return matchName &&
+          submitModeMatches(court) &&
+          acceptanceMatches(court) &&
+          reviewOverdueMatches(court) &&
+          decisionGroupMatches(court) &&
+          matchTags &&
+          ownerMatches(court) &&
+          inRange(court.planSubmit, el("planSubmitFrom").value, el("planSubmitTo").value) &&
+          inRange(court.lastSubmit, el("lastSubmitFrom").value, el("lastSubmitTo").value);
+      });
+
+      if (activeTab === "submit") {
+        const groupWeight = {
+          profileChanged: 1,
+          auditException: 2,
+          auditOverdue: 3,
+          limitedConfirm: 4,
+          nonAuto: 5,
+          autoNormal: 6
+        };
+        result = result.sort((a, b) =>
+          groupWeight[getDecisionGroup(a)] - groupWeight[getDecisionGroup(b)] ||
+          b.pendingSubmit - a.pendingSubmit ||
+          daysSince(b.lastManualReview) - daysSince(a.lastManualReview) ||
+          b.caseAmount - a.caseAmount
+        );
+      } else if (activeTab === "follow") {
+        result = result.sort((a, b) =>
+          daysSince(b.lastFollow) - daysSince(a.lastFollow) ||
+          b.review - a.review
+        );
+      } else {
+        result = result.sort((a, b) =>
+          b.totalCases - a.totalCases ||
+          (b.submitReview + b.review) - (a.submitReview + a.review)
+        );
+      }
+
+      return result;
+    }
+
+    function badgeForAcceptance(profile) {
+      const tone = profile === "受理" ? "green" : profile === "仅调解" ? "blue" : profile === "待定" ? "amber" : "red";
+      return `<span class="badge ${tone}">${profile}</span>`;
+    }
+
+    function badgeForSubmitMode(mode) {
+      const tone = mode === "自动递交" ? "green" : mode === "限量" ? "amber" : mode === "不自动递交" ? "gray" : "blue";
+      return `<span class="badge ${tone}">${mode}</span>`;
+    }
+
+    function badgeForDecisionGroup(court) {
+      const group = getDecisionGroup(court);
+      const tone = group === "auditOverdue" ? "red" : group === "auditException" ? "red" : group === "limitedConfirm" ? "amber" : group === "profileChanged" ? "blue" : group === "nonAuto" ? "gray" : "green";
+      return `<span class="badge ${tone}">${decisionGroupLabel(group)}</span>`;
+    }
+
+    function followBadge(date) {
+      const days = daysSince(date);
+      if (days > 30) return `<span class="badge red">${date} · ${days} 天</span>`;
+      if (days > 15) return `<span class="badge amber">${date} · ${days} 天</span>`;
+      return `<span class="badge green">${date} · ${days} 天</span>`;
+    }
+
+    function renderTableHead() {
+      const heads = {
+        submit: [
+          "法院名称",
+          "受理画像",
+          "递交模式",
+          "递交方式",
+          "限量规则",
+          '待递交案件数<button class="help-tip" type="button" aria-label="待递交案件数说明" data-tip="包含未递交、回收池和拒不受理案件">?</button>',
+          "待递交案件金额",
+          '待审核<button class="help-tip" type="button" aria-label="待审核说明" data-tip="仅统计线上递交后等待法院审核的案件">?</button>',
+          "审核超 10 天",
+          "反馈异常数",
+          "计划递交时间",
+          "最近递交时间"
+        ],
+        follow: ["法院名称", "法院标签", "最近跟进时间", "最近跟进间隔", "待审查数", "超 10 天数", "异常结案数", "受理画像", "建议动作"],
+        all: ["法院名称", "法院核心数据", "案件总数", "待递交案件数", "待审查数", "立案数", "异常结案数", "判决数", "递交模式", "法院标签", "最近递交", "最近复核"]
+      };
+      el("tableHead").innerHTML = `<tr>${heads[activeTab].map((head) => `<th>${head}</th>`).join("")}</tr>`;
+    }
+
+    function renderSubmitRow(court) {
+      return `
+        <tr>
+          <td>
+            <div class="court-cell">
+              <button data-court="${court.id}">${court.name}</button>
+              <span>${court.provinceCity} · ${court.remark}</span>
+            </div>
+          </td>
+          <td>${badgeForAcceptance(court.acceptanceProfile)}</td>
+          <td>${badgeForSubmitMode(court.submitMode)}</td>
+          <td>${court.submitChannel}</td>
+          <td>${court.limitRule}</td>
+          <td class="num">${court.pendingSubmit.toLocaleString()}</td>
+          <td class="num">${court.caseAmount.toLocaleString()} 万</td>
+          <td class="num">${court.onlinePendingReview.toLocaleString()}</td>
+          <td class="num">${court.pendingReviewOver10}</td>
+          <td class="num">${court.auditExceptionCount}</td>
+          <td>${court.planSubmit}</td>
+          <td>${court.lastSubmit}</td>
+        </tr>
+      `;
+    }
+
+    function renderFollowRow(court) {
+      return `
+        <tr>
+          <td>
+            <div class="court-cell">
+              <button data-court="${court.id}">${court.name}</button>
+              <span>${court.area}</span>
+            </div>
+          </td>
+          <td><div class="row-tags">${court.tags.map((tag) => `<span class="chip">${tag}</span>`).join("")}</div></td>
+          <td>${court.lastFollow}</td>
+          <td>${followBadge(court.lastFollow)}</td>
+          <td class="num">${court.review.toLocaleString()}</td>
+          <td class="num">${court.pendingReviewOver10}</td>
+          <td class="num">${court.abnormalClosed.toLocaleString()}</td>
+          <td>${badgeForAcceptance(court.acceptanceProfile)}</td>
+          <td>${court.pendingReviewOver10 > 0 ? "处理审核积压" : "例行跟进"}</td>
+        </tr>
+      `;
+    }
+
+    function renderAllRow(court) {
+      return `
+        <tr>
+          <td>
+            <div class="court-cell">
+              <button data-court="${court.id}">${court.name}</button>
+              <span>${court.area} · 最近复核 ${daysSince(court.lastManualReview)} 天前</span>
+            </div>
+          </td>
+          <td>
+            <div class="core-data">
+              <div class="core-row"><span>受理情况</span><strong>${court.accept} 件</strong></div>
+              <div class="core-row"><span>立案率</span><strong>${court.filingRate}%</strong></div>
+              <div class="core-row"><span>平均审查</span><strong>${court.avgReviewDays} 天</strong></div>
+            </div>
+          </td>
+          <td class="num">${court.totalCases.toLocaleString()}</td>
+          <td class="num">${court.pendingSubmit.toLocaleString()}</td>
+          <td class="num">${court.review.toLocaleString()}</td>
+          <td class="num">${court.filed.toLocaleString()}</td>
+          <td class="num">${court.abnormalClosed.toLocaleString()}</td>
+          <td class="num">${court.judgments.toLocaleString()}</td>
+          <td>${badgeForSubmitMode(court.submitMode)}</td>
+          <td><div class="row-tags">${court.tags.map((tag) => `<span class="chip">${tag}</span>`).join("")}</div></td>
+          <td>${court.lastSubmit}</td>
+          <td>${court.lastManualReview}</td>
+        </tr>
+      `;
+    }
+
+    function renderRows() {
+      const list = getFilteredCourts();
+      el("submitDecisionFilters").style.display = activeTab === "submit" ? "grid" : "none";
+      renderTableHead();
+      el("empty").style.display = list.length ? "none" : "block";
+      const render = activeTab === "submit" ? renderSubmitRow : activeTab === "follow" ? renderFollowRow : renderAllRow;
+      el("courtRows").innerHTML = list.map(render).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function daysSinceDateTime(value) {
+      if (!value || value === "-") return 999;
+      return daysSince(value.split(" ")[0]);
+    }
+
+    function formatMoney(value) {
+      return value.toLocaleString("zh-CN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getCourtSubmissionCases(court) {
+      const primary = court.submissionCase;
+      const others = Object.entries(submissionCaseSamples)
+        .filter(([courtId]) => courtId !== court.id)
+        .map(([, caseItem]) => ({ ...caseItem, defendantRegion: court.provinceCity }));
+      return [primary, ...others];
+    }
+
+    function buildRecommendationReason(caseItem, submitGap, notMailed) {
+      if (caseItem.isFiled) return "已立案，可转到“已立案”查看立案原因。";
+      const reasons = [];
+      if (caseItem.latestSubmit === "-") {
+        reasons.push("最近未递交");
+      } else if (submitGap >= 7) {
+        reasons.push(`${submitGap} 天未递交`);
+      }
+      if (notMailed) {
+        reasons.push("未邮寄");
+      } else if (caseItem.mailCount > 0) {
+        reasons.push(`已邮寄 ${caseItem.mailCount} 次`);
+      }
+      if (caseItem.claimAmount >= 10000) {
+        reasons.push("诉请金额较高");
+      }
+      if (caseItem.quickTag === "审核逾期") {
+        reasons.push("审核需推进");
+      } else if (caseItem.quickTag === "画像变化") {
+        reasons.push("画像变化需重看");
+      } else if (caseItem.quickTag === "限量待确认") {
+        reasons.push("本期递交需确认");
+      }
+      reasons.push("当前 SPV 优先保留 1 件");
+      return reasons.slice(0, 4).join(" · ");
+    }
+
+    function decorateCaseItem(caseItem) {
+      const submitGap = caseItem.latestSubmit === "-" ? 999 : daysSinceDateTime(caseItem.latestSubmit);
+      const neverSubmitted = caseItem.submitCount === 0 || caseItem.latestSubmit === "-";
+      const notMailed = caseItem.mailCount === 0 && caseItem.mailStatus === "未邮寄";
+      const needsRetry = caseItem.auditStatus.includes("待重新递交")
+        || caseItem.quickTag === "审核逾期"
+        || caseItem.quickTag === "画像变化";
+      const amountScore = Math.min(caseItem.claimAmount / 1500, 24);
+      const score = (neverSubmitted ? 36 : Math.min(submitGap, 40))
+        + (notMailed ? 22 : 6)
+        + amountScore
+        + (needsRetry ? 10 : 0)
+        - (caseItem.submitCount * 4)
+        - (caseItem.isFiled ? 999 : 0);
+      return {
+        ...caseItem,
+        submitGap,
+        recommendationScore: score,
+        recommendationReason: buildRecommendationReason(caseItem, submitGap, notMailed)
+      };
+    }
+
+    function getDrawerCaseBuckets(court) {
+      const allCases = getCourtSubmissionCases(court)
+        .map(decorateCaseItem)
+        .sort((a, b) =>
+          Number(a.isFiled) - Number(b.isFiled) ||
+          b.recommendationScore - a.recommendationScore ||
+          b.claimAmount - a.claimAmount
+        );
+      const pendingCases = allCases.filter((caseItem) => !caseItem.isFiled);
+      const recommendedMap = new Map();
+      pendingCases
+        .sort((a, b) =>
+          b.recommendationScore - a.recommendationScore ||
+          b.claimAmount - a.claimAmount
+        )
+        .forEach((caseItem) => {
+          if (!recommendedMap.has(caseItem.spv)) {
+            recommendedMap.set(caseItem.spv, caseItem);
+          }
+        });
+      const recommendedCases = [...recommendedMap.values()];
+      const filedCases = allCases
+        .filter((caseItem) => caseItem.isFiled)
+        .sort((a, b) => daysSinceDateTime(a.latestSubmit) - daysSinceDateTime(b.latestSubmit));
+      const visibleCases = activeCaseTab === "recommended"
+        ? recommendedCases
+        : activeCaseTab === "filed"
+          ? filedCases
+          : pendingCases;
+      return { allCases, pendingCases, recommendedCases, filedCases, visibleCases };
+    }
+
+    function getSelectedDrawerCases(court) {
+      const { pendingCases } = getDrawerCaseBuckets(court);
+      return pendingCases.filter((caseItem) => selectedCaseIds.has(caseItem.caseId));
+    }
+
+    function seedRecommendedSelection(court) {
+      selectedCaseIds.clear();
+      getDrawerCaseBuckets(court).recommendedCases.forEach((caseItem) => {
+        selectedCaseIds.add(caseItem.caseId);
+      });
+    }
+
+    function caseBadge(value) {
+      const tone = value.includes("立案") || value.includes("签收")
+        ? "green"
+        : value.includes("不通过") || value.includes("异常")
+        ? "red"
+        : value.includes("待") || value.includes("逾期")
+          ? "amber"
+          : "blue";
+      return `<span class="badge ${tone}">${value}</span>`;
+    }
+
+    function renderLatestSubmitCell(caseItem) {
+      if (caseItem.latestSubmit === "-") {
+        return `
+          <div class="table-cell-stack">
+            <strong>-</strong>
+            <span>最近未递交</span>
+          </div>
+        `;
+      }
+      return `
+        <div class="table-cell-stack">
+          <strong>${caseItem.latestSubmit}</strong>
+          <span>${caseItem.submitGap} 天前</span>
+        </div>
+      `;
+    }
+
+    function renderMailCell(caseItem) {
+      if (caseItem.mailCount === 0 && caseItem.mailStatus === "未邮寄") {
+        return `
+          <div class="table-cell-stack">
+            <strong>未邮寄</strong>
+            <span>可优先安排</span>
+          </div>
+        `;
+      }
+      return `
+        <div class="table-cell-stack">
+          <strong>${caseItem.mailStatus}</strong>
+          <span>${caseItem.mailTime === "-" ? `${caseItem.mailCount} 次邮寄` : caseItem.mailTime}</span>
+        </div>
+      `;
+    }
+
+    function renderSelectableCaseRow(caseItem) {
+      const checked = selectedCaseIds.has(caseItem.caseId) ? " checked" : "";
+      const disabled = caseItem.isFiled ? " disabled" : "";
+      const noteText = caseItem.isFiled ? "已立案，建议切到“已立案”查看立案原因。" : caseItem.recommendationReason;
+      return `
+        <tr>
+          <td class="check-cell"><input type="checkbox" data-case-toggle="${caseItem.caseId}"${checked}${disabled} /></td>
+          <td>
+            <div class="table-cell-stack">
+              <button class="case-link" data-case-detail="${caseItem.caseId}">案件 ${caseItem.caseId}</button>
+              <span>点击查看案件详情</span>
+            </div>
+          </td>
+          <td>
+            <div class="table-cell-stack">
+              <div>${caseBadge(caseItem.currentStatus)}</div>
+              <span>${caseItem.quickTag}</span>
+            </div>
+          </td>
+          <td>${renderLatestSubmitCell(caseItem)}</td>
+          <td>
+            <div class="table-cell-stack">
+              <div>${caseBadge(caseItem.auditStatus)}</div>
+              <span>${caseItem.auditFeedback}</span>
+            </div>
+          </td>
+          <td>${renderMailCell(caseItem)}</td>
+          <td class="num">${caseItem.submitCount}</td>
+          <td class="num">${formatMoney(caseItem.claimAmount)}</td>
+          <td><div class="table-cell-stack"><strong>${caseItem.spv}</strong><span>${caseItem.submitMethod}</span></div></td>
+          <td><div class="table-cell-stack"><strong>${caseItem.assistant}</strong><span>律师 ${caseItem.lawyer}</span></div></td>
+          <td class="case-note-cell" title="${escapeHtml(noteText)}"><span>${noteText}</span></td>
+        </tr>
+      `;
+    }
+
+    function renderFiledCaseRow(caseItem) {
+      return `
+        <tr>
+          <td>
+            <div class="table-cell-stack">
+              <button class="case-link" data-case-detail="${caseItem.caseId}">案件 ${caseItem.caseId}</button>
+              <span>点击查看案件详情</span>
+            </div>
+          </td>
+          <td class="case-note-cell" title="${escapeHtml(caseItem.filingReason)}"><span>${caseItem.filingReason}</span></td>
+          <td>${renderLatestSubmitCell(caseItem)}</td>
+          <td>${caseItem.submitMethod}</td>
+          <td class="num">${formatMoney(caseItem.claimAmount)}</td>
+          <td><div class="table-cell-stack"><strong>${caseItem.spv}</strong><span>${caseItem.defendantName}</span></div></td>
+          <td><div class="table-cell-stack"><strong>${caseItem.assistant}</strong><span>律师 ${caseItem.lawyer}</span></div></td>
+        </tr>
+      `;
+    }
+
+    function renderCaseTable(caseList) {
+      if (activeCaseTab === "filed") {
+        return `
+          <table class="drawer-case-table">
+            <thead>
+              <tr>
+                <th>案件</th>
+                <th>立案原因</th>
+                <th>最近递交时间</th>
+                <th>递交方式</th>
+                <th>诉请金额（元）</th>
+                <th>SPV</th>
+                <th>负责人</th>
+              </tr>
+            </thead>
+            <tbody>${caseList.length ? caseList.map(renderFiledCaseRow).join("") : `<tr><td colspan="7" class="mini">当前没有已立案案件样例</td></tr>`}</tbody>
+          </table>
+        `;
+      }
+
+      const allChecked = caseList.length && caseList.every((caseItem) => selectedCaseIds.has(caseItem.caseId) || caseItem.isFiled);
+      return `
+        <table class="drawer-case-table">
+          <thead>
+            <tr>
+              <th class="check-cell"><input type="checkbox" data-case-select-all${allChecked ? " checked" : ""} /></th>
+              <th>案件</th>
+              <th>当前状态</th>
+              <th>最近递交时间</th>
+              <th>最新反馈 / 审核状态</th>
+              <th>邮寄情况</th>
+              <th>递交次数</th>
+              <th>诉请金额（元）</th>
+              <th>SPV</th>
+              <th>负责人</th>
+              <th>推荐原因</th>
+            </tr>
+          </thead>
+          <tbody>${caseList.length ? caseList.map(renderSelectableCaseRow).join("") : `<tr><td colspan="11" class="mini">当前没有可递交案件样例</td></tr>`}</tbody>
+        </table>
+      `;
+    }
+
+    function syncDrawerActions(court) {
+      const selectedCases = getSelectedDrawerCases(court);
+      const submitButton = el("createSubmit");
+      submitButton.textContent = selectedCases.length
+        ? `生成递交任务（${selectedCases.length} 件）`
+        : "生成递交任务";
+    }
+
+    function renderDrawer(court) {
+      const { recommendedCases, filedCases, visibleCases } = getDrawerCaseBuckets(court);
+      const selectedCases = getSelectedDrawerCases(court);
+      const selectedSpvCount = new Set(selectedCases.map((caseItem) => caseItem.spv)).size;
+      const helperText = activeCaseTab === "recommended"
+        ? "按“最近没交、未邮寄、金额较大、每个 SPV 1 件”优先推荐。"
+        : activeCaseTab === "filed"
+          ? "用于快速回看已立案案件和对应立案原因。"
+          : "可在全部待递交案件里补充调整递交选择。";
+      const caseSummary = activeCaseTab === "filed"
+        ? `已立案 ${filedCases.length} 件，可快速回看立案原因`
+        : selectedCases.length
+          ? `已选 ${selectedCases.length} 件 · 覆盖 ${selectedSpvCount} 个 SPV`
+          : "当前还没有选中要生成递交任务的案件";
+      el("drawerTitle").textContent = court.name;
+      el("drawerBody").innerHTML = `
+        <div class="section">
+          <h3>法院递交核心信息</h3>
+          <div class="section-body">
+            <div class="drawer-metrics">
+              <div class="drawer-metric"><span>待递交案件</span><strong>${court.pendingSubmit.toLocaleString()}</strong></div>
+              <div class="drawer-metric"><span>待递交金额</span><strong>${court.caseAmount.toLocaleString()} 万</strong></div>
+              <div class="drawer-metric"><span>线上待审核</span><strong>${court.onlinePendingReview.toLocaleString()}</strong></div>
+              <div class="drawer-metric"><span>审核超 10 天</span><strong>${court.pendingReviewOver10}</strong></div>
+              <div class="drawer-metric"><span>反馈异常</span><strong>${court.auditExceptionCount}</strong></div>
+              <div class="drawer-metric"><span>已立案</span><strong>${court.filed.toLocaleString()}</strong></div>
+            </div>
+            <div class="drawer-info-grid">
+              <div class="drawer-info-item"><span>受理画像</span><span>${badgeForAcceptance(court.acceptanceProfile)}</span></div>
+              <div class="drawer-info-item"><span>递交模式</span><span>${badgeForSubmitMode(court.submitMode)}</span></div>
+              <div class="drawer-info-item"><span>递交方式</span><span>${court.submitChannel}</span></div>
+              <div class="drawer-info-item"><span>限量规则</span><span>${court.limitRule}</span></div>
+              <div class="drawer-info-item"><span>计划递交时间</span><span>${court.planSubmit}</span></div>
+              <div class="drawer-info-item"><span>最近递交时间</span><span>${court.lastSubmit}</span></div>
+              <div class="drawer-info-item"><span>待递交构成</span><span>未递交 ${court.pendingUnsubmitted}、回收池 ${court.pendingRecovered}、拒不受理 ${court.pendingRejected}</span></div>
+              <div class="drawer-info-item"><span>法院标签</span><span>${court.tags.join("、")}</span></div>
+              <div class="drawer-info-item"><span>备注信息</span><span>${court.remark}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head">
+            <div class="section-title">
+              <h3>递交环节案件信息</h3>
+              <span class="mini">${helperText}</span>
+            </div>
+            <div class="drawer-case-tabs">
+              <button class="drawer-case-tab ${activeCaseTab === "recommended" ? "active" : ""}" data-case-tab="recommended">推荐递交 ${recommendedCases.length}</button>
+              <button class="drawer-case-tab ${activeCaseTab === "all" ? "active" : ""}" data-case-tab="all">全部待递交案件 ${court.pendingSubmit.toLocaleString()}</button>
+              <button class="drawer-case-tab ${activeCaseTab === "filed" ? "active" : ""}" data-case-tab="filed">已立案 ${filedCases.length}</button>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="drawer-case-toolbar">
+              <span class="mini">待递交 ${court.pendingSubmit.toLocaleString()} 件 · 当前展示 ${visibleCases.length} 件</span>
+              <span class="mini">${caseSummary}</span>
+            </div>
+            <div class="drawer-case-table-wrap">
+              ${renderCaseTable(visibleCases)}
+            </div>
+          </div>
+        </div>
+      `;
+      syncDrawerActions(court);
+    }
+
+    function openDrawer(courtId) {
+      const court = courts.find((item) => item.id === courtId);
+      if (!court) return;
+      activeDrawerCourtId = courtId;
+      activeCaseTab = "recommended";
+      seedRecommendedSelection(court);
+      renderDrawer(court);
+      el("drawerMask").classList.add("open");
+    }
+
+    function showToast(text) {
+      el("toast").textContent = text;
+      el("toast").classList.add("show");
+      window.setTimeout(() => el("toast").classList.remove("show"), 1500);
+    }
+
+    function resetFilters() {
+      ["courtName", "planSubmitFrom", "planSubmitTo", "lastSubmitFrom", "lastSubmitTo"].forEach((id) => el(id).value = "");
+      el("acceptanceProfile").value = "all";
+      el("reviewOverdue").value = "all";
+      el("submitMode").value = "all";
+      el("caseOwner").value = "我负责的案件";
+      activeDecisionGroup = "profileChanged";
+      document.querySelectorAll("[data-decision-group]").forEach((button) => button.classList.toggle("active", button.dataset.decisionGroup === "profileChanged"));
+      selectedTags.clear();
+      document.querySelectorAll("[data-tag]").forEach((button) => button.classList.remove("active"));
+      renderRows();
+    }
+
+    document.addEventListener("input", (event) => {
+      if (event.target.matches(".input")) renderRows();
+    });
+
+    document.addEventListener("change", (event) => {
+      if (event.target.matches("[data-case-toggle]")) {
+        const caseId = event.target.dataset.caseToggle;
+        if (event.target.checked) {
+          selectedCaseIds.add(caseId);
+        } else {
+          selectedCaseIds.delete(caseId);
+        }
+        if (activeDrawerCourtId) {
+          renderDrawer(courts.find((item) => item.id === activeDrawerCourtId));
+        }
+        return;
+      }
+
+      if (event.target.matches("[data-case-select-all]")) {
+        const court = courts.find((item) => item.id === activeDrawerCourtId);
+        if (!court) return;
+        const { visibleCases } = getDrawerCaseBuckets(court);
+        visibleCases.filter((caseItem) => !caseItem.isFiled).forEach((caseItem) => {
+          if (event.target.checked) {
+            selectedCaseIds.add(caseItem.caseId);
+          } else {
+            selectedCaseIds.delete(caseItem.caseId);
+          }
+        });
+        renderDrawer(court);
+        return;
+      }
+
+      if (event.target.matches(".select") || event.target.matches(".input")) renderRows();
+    });
+
+    document.addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-tab]");
+      if (tab) {
+        activeTab = tab.dataset.tab;
+        document.querySelectorAll("[data-tab]").forEach((button) => button.classList.toggle("active", button === tab));
+        renderRows();
+        return;
+      }
+
+      const decisionButton = event.target.closest("[data-decision-group]");
+      if (decisionButton) {
+        activeDecisionGroup = decisionButton.dataset.decisionGroup;
+        document.querySelectorAll("[data-decision-group]").forEach((button) => button.classList.toggle("active", button === decisionButton));
+        renderRows();
+        return;
+      }
+
+      const caseTab = event.target.closest("[data-case-tab]");
+      if (caseTab) {
+        const court = courts.find((item) => item.id === activeDrawerCourtId);
+        if (!court) return;
+        activeCaseTab = caseTab.dataset.caseTab;
+        renderDrawer(court);
+        return;
+      }
+
+      const tag = event.target.closest("[data-tag]");
+      if (tag) {
+        const value = tag.dataset.tag;
+        if (selectedTags.has(value)) {
+          selectedTags.delete(value);
+          tag.classList.remove("active");
+        } else {
+          selectedTags.add(value);
+          tag.classList.add("active");
+        }
+        renderRows();
+        return;
+      }
+
+      const caseDetail = event.target.closest("[data-case-detail]");
+      if (caseDetail) {
+        showToast(`已跳转到案件 ${caseDetail.dataset.caseDetail} 详情（示意）`);
+        return;
+      }
+
+      const courtButton = event.target.closest("[data-court]");
+      if (courtButton) {
+        openDrawer(courtButton.dataset.court);
+        return;
+      }
+
+      if (event.target.id === "closeDrawer") {
+        activeDrawerCourtId = null;
+        el("drawerMask").classList.remove("open");
+        return;
+      }
+
+      if (event.target.id === "createFollow") {
+        showToast("已模拟生成跟进任务");
+        return;
+      }
+
+      if (event.target.id === "createSubmit") {
+        const court = courts.find((item) => item.id === activeDrawerCourtId);
+        const selectedCases = court ? getSelectedDrawerCases(court) : [];
+        showToast(selectedCases.length ? `已模拟生成 ${selectedCases.length} 件递交任务` : "请先选择要递交的案件");
+        return;
+      }
+    });
+
+    renderRows();
+  </script>
+</body>
+</html>
